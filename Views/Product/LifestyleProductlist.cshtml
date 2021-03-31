@@ -1,0 +1,94 @@
+﻿@model IEnumerable<E_Commerce.Models.Product>
+
+@{
+    ViewBag.Title = "LifestyleProductlist";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>LifestyleProductlist</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Product_name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Description)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.UnitPrice)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Onhand)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ImageFile)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Cost)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.SizeCategory)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.FinalSubCategory.FinalSubCate_name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.MainCategory.Category_name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Sale.Amount)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.SubCatetory.SubCategory_name)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Product_name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Description)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.UnitPrice)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Onhand)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.ImageFile)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Cost)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.SizeCategory)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.FinalSubCategory.FinalSubCate_name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.MainCategory.Category_name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Sale.Amount)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.SubCatetory.SubCategory_name)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.Product_id }) |
+            @Html.ActionLink("Details", "Details", new { id=item.Product_id }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.Product_id })
+        </td>
+    </tr>
+}
+
+</table>

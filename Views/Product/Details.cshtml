@@ -1,0 +1,101 @@
+﻿@model E_Commerce.Models.Product
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var image = Model.ImageFile.Split('|');
+}
+<hr />
+<div class="container text-secondary ml-5">
+    <a class="text-secondary" href="/Home/Index">Home</a>&nbsp;/&nbsp;<a class="text-secondary" href="/Product/ManProductlist/@Model.MainCategory.Category_id?categoryname=m">@Model.MainCategory.Category_name</a>&nbsp;/&nbsp;@Model.Product_name
+</div>
+
+<div class="container ml-5 mt-4">
+    <div class="row">
+        <div class="col-8">
+            <div class="container ml-0 ">
+                <div class="row">
+                    @foreach (var item in image)
+                     {
+                        <div class="col-sm-6 mt-2">
+                            <img style="max-width:100%" src="~/Content/image/@item" alt="product"/>
+                        </div>
+                       
+                     }
+
+                </div>
+            </div>
+          
+        </div>
+        <div class="col-4 information">
+
+            <div class="name mt-3">
+                <h3 class="font-weight-bold">@Model.Product_name</h3>
+            </div>
+            <div class="price mt-4">
+                <h5 class="font-weight-bold">৳ @Model.UnitPrice</h5>
+            </div>
+            <div class="description mt-4">
+                <p class="text-secondary">@Model.Description</p>
+            </div>
+            <div class="extraactivities mt-4">
+                <button class="btn p-3 border-right border-dark"><i class="text-secondary far fa-envelope"></i></button>
+                
+                <button class="btn p-3 border-right border-dark"><i class=" text-secondary far fa-heart"></i></button>
+
+            </div>
+            @if (Model.ProductSizes.Count > 0)
+            {
+            <form class="mt-4" onsubmit="return validateForm()" action="/Product/addcart" method="post">
+                <input type="hidden" id="productid" name="productid" value=@Model.Product_id>
+                <div class="form-group">
+                    <label for="selectsize">Size<sub style="color:red">*</sub></label>
+                    <select class="form-control" id="selectsize" name="sizename">
+                        @foreach (var item in Model.ProductSizes)
+                        {
+                            if (item.Count > 0)
+                            {
+                                <option value="@item.ProductSizeID|@item.Count">@item.SizeName</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="ml-1 form-group">
+                    <button type="button" onclick="decrement()">-</button>
+                    <input type="number" id="demoInput" name="quantity" min=1 max=100 value="1" required>
+                    <button type="button" onclick="increment()">+</button>
+                    <button type="submit" class="ml-3 mt-2 btn btn-primary mb-2" id="addto">Add To Cart</button>
+                </div>
+                <div class="ml-1" id="erroms"></div>
+            </form>
+            }
+            else
+            {
+                <div class="mt-4 sizenotavailable">
+                    <p style="color:red">Size Not Available</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<script>
+    function increment() {
+        document.getElementById('demoInput').stepUp();
+    }
+    function decrement() {
+        document.getElementById('demoInput').stepDown();
+    }
+    $("#demoInput").change(function () {
+        if (Number($("#selectsize").val().split('|')[1]) < ($("#demoInput").val())) {
+            $("#erroms").append(`<p style="color:red" id="counterror">Not Available.Available Quantity is ${$("#selectsize").val().split('|')[1]}</p>`);
+        }
+    });
+    function validateForm() {
+        if ($("#counterror").length) {
+            return false;
+        } else {
+            return true;
+        }  
+    }
+</script>
+

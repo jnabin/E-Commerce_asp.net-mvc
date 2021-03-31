@@ -1,0 +1,215 @@
+﻿@model E_Commerce.Models.Product
+
+@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    List<int> categoryList = new List<int>();
+    var dict = new Dictionary<string, string[]>();
+    if (TempData["ProductError"] != null)
+    {
+        dict = (Dictionary<string, string[]>)TempData["ProductError"];
+    }
+
+}
+
+
+<form enctype="multipart/form-data" id="friendform" onsubmit="getvalue()">
+
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>Product</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="form-group">
+            <label for="dropDownId" class="control-label col-md-2"> Select Category </label>
+
+            <div class="col-md-7">
+                <select class="form-control" id="category" name="cate">
+                    @foreach (var item in ViewData["MainCatagories"] as IList<E_Commerce.Models.MainCategory>)
+                    {
+                        if (item.SubCatetories.Count > 0)
+                        {
+                            <optgroup label="@item.Category_name">
+                                @foreach (var item2 in item.SubCatetories)
+                                {
+                                    if (item2.FinalSubCategories.Count > 0)
+                                    {
+                                        if (item2.SubCategory_name == "New In")
+                                        {
+                                            continue;
+                                        }
+
+                                        <optgroup label="&nbsp;&nbsp;&nbsp;&nbsp;@item2.SubCategory_name">
+                                            @foreach (var item3 in item2.FinalSubCategories)
+                                            {
+                                                <option value="f @item3.FinalSubCate_id">@item3.FinalSubCate_name</option>
+                                            }
+                                        </optgroup>
+                                    }
+                                    else
+                                    {
+                                        <option value="s @item2.SubCategory_id">@item2.SubCategory_name</option>
+                                    }
+
+                                }
+
+
+                            </optgroup>
+                        }
+                        else
+                        {
+                            <option value="m @item.Category_id">@item.Category_name</option>
+                        }
+
+
+                    }
+                </select>
+
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.SizeCategory, "SizeCategory", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-7">
+                <select name="SizeCategory" class="form-control">
+                    <option value="dress">Dress</option>
+                    <option value="shoe">Shoes</option>
+                    <option value="pant">Pants</option>
+                    <option value="other">others</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Product_name, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-7">
+                @Html.EditorFor(model => model.Product_name, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Product_name, "", new { @class = "text-danger" })
+                @if (ViewData["errorm"] != null)
+                {
+                    var d = ViewData["errorm"].ToString();
+                    var c = d;
+                    <label style="color:red">@ViewData["errorm"]</label>
+
+                }
+
+                @if(dict.Count > 0 && dict.ContainsKey("Product_name")){
+                    <p class="text-danger">@dict["Product_name"][0]</p>
+                }
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-7">
+                @Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "form-control" } })
+                @if (dict.Count > 0 && dict.ContainsKey("Description"))
+                {
+                    <p class="text-danger">@dict["Description"][0]</p>
+                }
+            </div>
+           
+        </div>
+
+
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.UnitPrice, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-7">
+                @Html.EditorFor(model => model.UnitPrice, new { htmlAttributes = new { @class = "form-control" } })
+                @if (dict.Count > 0 && dict.ContainsKey("UnitPrice"))
+                {
+                    <p class="text-danger">@dict["UnitPrice"][0]</p>
+                }
+            </div>
+           
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Onhand, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-7">
+                @Html.EditorFor(model => model.Onhand, new { htmlAttributes = new { @class = "form-control" } })
+                @if (dict.Count > 0 && dict.ContainsKey("Onhand"))
+                {
+                    <p class="text-danger">@dict["Onhand"][0]</p>
+                }
+            </div>
+            
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.ImageFile, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-7">
+                <input class="form-control-file" type="file" name="files" accept="image/*" multiple />
+                @if (dict.Count > 0 && dict.ContainsKey("ImageFile"))
+                {
+                    <p class="text-danger">@dict["ImageFile"][0]</p>
+                }
+            </div>
+           
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Cost, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-7">
+                @Html.EditorFor(model => model.Cost, new { htmlAttributes = new { @class = "form-control" } })
+                @if (dict.Count > 0 && dict.ContainsKey("Cost"))
+                {
+                    <p class="text-danger">@dict["Cost"][0]</p>
+                }
+            </div>
+            
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Add" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+</form>
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+
+<script>
+
+    function getvalue() {
+        var selected = $('#category').val();
+        
+        var valdata = new FormData($('form').get(0));
+        if (selected[0] === "s") {
+            selected = selected.substring(2);
+            valdata.append("SubCategoryID", selected);
+        } else if (selected[0] === "m") {
+            selected = selected.substring(2);
+            valdata.append("CategoryID", selected);
+        } else {
+            selected = selected.substring(2);
+            valdata.append("FinalSubCategoryID", selected);
+        }
+        
+
+                $.ajax({
+                    url: '@Url.Action("AddProduct", "Admin")',
+                    type: 'POST',
+                    data: valdata,
+                    cache: false,
+                    processData: false,
+                    contentType: false,
+                    success: function (color) {
+                        ;
+                    },
+                    error: function () {
+                        alert('Error occured');
+                    }
+                }).done(function (data) {
+                    
+                    window.location.replace(data.newUrl);
+                });
+
+    }
+</script>

@@ -1,0 +1,176 @@
+﻿@model IEnumerable<E_Commerce.Models.ViewModels.CartViewModel>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var c = Model;
+    double total = 0;
+    
+
+}
+
+<hr />
+<div class="container text-center mt-2">
+    <div class="row">
+        <div class="col">
+            <h3 class="text-secondary">SHOPPING CART</h3>
+        </div>
+    </div>
+</div>
+<br>
+<div class="container text-center">
+    <div class="row">
+        <div class="col-1">
+            <p class="text-secondary">#</p>
+        </div>
+        <div class="col-1">
+            <p class="text-secondary">REMOVE</p>
+        </div>
+        <div class="col-1">
+            <p class="text-secondary">PICTURE</p>
+        </div>
+        <div class="col-6">
+            <p class="text-secondary">PRODUCT(S)</p>
+        </div>
+        <div class="col-1">
+            <p class="text-secondary">PRICE(৳)</p>
+        </div>
+        <div class="col-1">
+            <p class="text-secondary">QUANTITY</p>
+        </div>
+        <div class="col-1">
+            <p class="text-secondary">TOTAL</p>
+        </div>
+    </div>
+</div>
+<hr />
+@if (Session["cart"]!=null)
+{
+
+
+<form id="hideonempty">
+
+
+    @foreach (var item in Model)
+    {
+        int i = 0;
+        int j = 1;
+        <div class="container text-center delete">
+            <div class="row">
+                <div class="col-1">
+                    <p class="text-secondary">@j</p>
+                </div>
+                <div class="col-1">
+                    <button class="btn btn btn-light" onclick="deleteCart(this)" data-cartindex-type="@i"><i class="far fa-trash-alt"></i></button>
+                </div>
+                <div class="col-1">
+                    @{string image = (item.product.ImageFile).Split('|')[0];}
+                    <img style="max-width:100%;" src="~/Content/image/@image" alt="product_image" />
+
+                </div>
+                <div class="col-6">
+                    <div class="container text-center">
+                        <p class="font-weight-bold">@item.product.Product_name</p>
+                        @if (item.size != null)
+                        {
+                            <p>SIZE:&nbsp;@item.size.SizeName</p>
+                        }
+                        <a class="font-weight-bold" href="/Product/EditCartItem/@i">EDIT</a>
+                    </div>
+                </div>
+                <div class="col-1">
+                    <p>@item.product.UnitPrice</p>
+                </div>
+                <div class="col-1">
+                    <p class="p-2 border border-secondary">@item.count</p>
+                </div>
+                @{
+                    var subtotal = (double)(item.count * item.product.UnitPrice);
+                    total += subtotal;
+                }
+                <div class="col-1">
+                    <p>৳ @subtotal</p>
+                </div>
+            </div>
+        </div>
+        <hr />
+                        i++;
+                        j++;
+                    }
+    <div class="container ml-5">
+        <div class="row">
+            <div class="col-9"></div>
+            <div class="col-3">
+                <a class="border border-secondary p-2" href="/Home/Index">Continue Shopping</a>
+                <div class="bg-light p-2 mt-4">
+                    <table>
+                        <tr>
+                            <td>
+                                Sub-Total:&nbsp;
+                            </td>
+                            <td>
+                                ৳ @total
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Shipping:&nbsp;
+                            </td>
+                            <td>
+                                ৳ 0.00
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Total:&nbsp;
+                            </td>
+                            <td>
+                                ৳ @total
+                            </td>
+                        </tr>
+                    </table>
+                 
+                </div>
+                <div class="mt-2">
+                    <button class="btn btn-dark" type="submit">NEXT</button>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+</form>
+                    }
+                    else
+                    {
+<div class="container text-center m-5">
+    <p  style="color:red">Nothing In Your Cart</p>
+    <a class="border border-secondary p-2" href="/Home/Index">Continue Shopping</a>
+</div>
+                    }
+<div class="container text-center m-5" id ="emptycart" style="display:none">
+    <p style="color:red">Nothing In Your Cart</p>
+    <a class="border border-secondary p-2" href="/Home/Index">Continue Shopping</a>
+</div>
+<script>
+    function deleteCart(item) {
+        var index = item.getAttribute("data-cartindex-type");
+        $.ajax({
+            type: "POST",
+            datatype: "json",
+            url: '/Cart/delete',
+            data: {
+                id: index
+            },
+            success: function (response) {
+                if (response == "empty") {
+                    $(item).parents(".delete").remove();
+                    $("#hideonempty").remove();
+                    $("#emptycart").css("display", "block");
+                } else {
+                    $(item).parents(".delete").remove();
+                }
+                
+            }
+        });
+    }
+</script>
