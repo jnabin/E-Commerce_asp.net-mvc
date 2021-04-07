@@ -17,8 +17,7 @@ namespace E_Commerce.Models
         public string Email { get; set; }
         [Required]
         [DataType(DataType.Text)]
-        [StringLength(15, MinimumLength = 8)]
-        
+        [StringLength(20, MinimumLength = 8)] 
         public string Address { get; set; }
         [Required]
         [StringLength(15, MinimumLength =4)]

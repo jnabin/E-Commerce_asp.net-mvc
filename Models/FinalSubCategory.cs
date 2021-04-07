@@ -17,6 +17,7 @@ namespace E_Commerce.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public FinalSubCategory()
         {
+            this.ProductHistories = new HashSet<ProductHistory>();
             this.Products = new HashSet<Product>();
         }
     
@@ -25,6 +26,8 @@ namespace E_Commerce.Models
         public int SubCate_id { get; set; }
     
         public virtual SubCatetory SubCatetory { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<ProductHistory> ProductHistories { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Product> Products { get; set; }
     }

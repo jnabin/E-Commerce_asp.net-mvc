@@ -85,17 +85,28 @@
 </div>
 <script>
     function increment() {
+        $("#erroms").empty();
         document.getElementById('demoInput').stepUp();
     }
     function decrement() {
+        $("#erroms").empty();
         document.getElementById('demoInput').stepDown();
     }
     $("#demoInput").change(function () {
         if (Number($("#selectsize").val().split('|')[1]) < ($("#demoInput").val())) {
+            $("#erroms").empty();
             $("#erroms").append(`<p style="color:red" id="counterror">Not Available.Available Quantity is ${$("#selectsize").val().split('|')[1]}</p>`);
-        }
+        }else{
+            $("#erroms").empty();
+    }
     });
     function validateForm() {
+        var value = Number($("#demoInput").val());
+
+        if (Number($("#selectsize").val().split('|')[1]) < ($("#demoInput").val())) {
+            $("#erroms").empty();
+            $("#erroms").append(`<p style="color:red" id="counterror">Not Available.Available Quantity is ${$("#selectsize").val().split('|')[1]}</p>`);
+        } 
         if ($("#counterror").length) {
             return false;
         } else {

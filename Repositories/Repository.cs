@@ -48,6 +48,11 @@ namespace E_Commerce.Repositories
             
         }
 
+        public List<OrderProduct> GetByCustomerId(int cid, int pid)
+        {
+            return context.Set<OrderProduct>().Where(x=> x.CustomerID == cid && x.ProductID == pid).ToList();
+        }
+
         public bool GetByProductName(string name, int id)
         {
             if (context.Set<Product>().FirstOrDefault(c => c.CategoryID == id) != null && context.Set<Product>().FirstOrDefault(c => c.Product_name == name) != null)
@@ -59,6 +64,12 @@ namespace E_Commerce.Repositories
                 return false;
             }
 
+        }
+
+        public ProductHistory GetByProductNameCategory(string name, int id)
+        {
+            return context.Set<ProductHistory>().Where(x => x.CategoryID==id && x.Product_name == name).FirstOrDefault();
+            
         }
 
         public List<Product> GetfromFinalCategory(int fid)
@@ -86,9 +97,21 @@ namespace E_Commerce.Repositories
             context.SaveChanges();
         }
 
+        public void DeleteSize(int id)
+        {
+            context.Set<ProductSize>().RemoveRange(context.Set<ProductSize>().Where(x => x.ProductID==id));
+            context.SaveChanges();
+        }
+
         public TEntity Get(int id)
         {
             return context.Set<TEntity>().Find(id);
+        }
+
+        public List<Product> ProductsWithoutSize()
+        {
+            var v = context.Set<Product>().Where(x => x.SizeCategory != "others");
+            return v.Where(x=>x.ProductSizes.Count==0).ToList();
         }
 
         public List<TEntity> GetAll()
@@ -99,7 +122,15 @@ namespace E_Commerce.Repositories
         public void Insert(TEntity entity)
         {
             context.Set<TEntity>().Add(entity);
-            context.SaveChanges();
+            try
+            {
+                context.SaveChanges();
+            }
+            catch (DbEntityValidationException exc)
+            {
+
+                throw exc;
+            }
             
         }
 
@@ -107,6 +138,40 @@ namespace E_Commerce.Repositories
         {
             context.Entry(entity).State = EntityState.Modified;
             context.SaveChanges();
+        }
+
+        private void ProductUpdate(Product product)
+        {
+            context.Entry(product).State = EntityState.Modified;
+            context.SaveChanges();
+        }
+
+        public void PartialUpdate(Product product)
+        {
+            var item = context.Set<Product>().Find(product.Product_id);
+            item.ImageFile = product.ImageFile;
+            item.Description = product.Description;
+            item.UnitPrice = product.UnitPrice;
+            item.Product_name = product.Product_name;
+            ProductUpdate(item);
+
+        }
+
+        private void ProductHistoryUpdate(ProductHistory product)
+        {
+            context.Entry(product).State = EntityState.Modified;
+            context.SaveChanges();
+        }
+
+        public void PartialHistoryUpdate(ProductHistory product)
+        {
+            var item = context.Set<ProductHistory>().Find(product.Product_id);
+            item.ImageFile = product.ImageFile;
+            item.Description = product.Description;
+            item.UnitPrice = product.UnitPrice;
+            item.Product_name = product.Product_name;
+            ProductHistoryUpdate(item);
+
         }
     }
 }

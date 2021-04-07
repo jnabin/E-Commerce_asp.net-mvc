@@ -14,6 +14,9 @@ namespace E_Commerce.Controllers
     public class ProductController : Controller
     {
         private ProductRepository product = new ProductRepository();
+        private ProductOrderRepository OrderProduct = new ProductOrderRepository();
+        
+        private ProductHistoryRepository productHistory = new ProductHistoryRepository();
         // GET: Product
         [HttpPost]
         
@@ -25,7 +28,7 @@ namespace E_Commerce.Controllers
             productView.Product_name = product.Get(id).Product_name;
             productView.Description = product.Get(id).Description;
             productView.CategoryID = product.Get(id).CategoryID;
-            productView.Onhand = product.Get(id).Onhand;
+           
             productView.UnitPrice = product.Get(id).UnitPrice;            
             productView.FinalSubCategoryID = product.Get(id).FinalSubCategoryID;
             productView.SubCategoryID = product.Get(id).SubCategoryID;
@@ -58,7 +61,6 @@ namespace E_Commerce.Controllers
                 {
                     sizecount.Add(item.Count);
                 }
-
             }
             productView.sizecount = sizecount;
             productView.sizename = sizename;
@@ -86,6 +88,18 @@ namespace E_Commerce.Controllers
             if (Session["cart"] != null)
             {
                 cartviewlist = (List<CartViewModel>)Session["cart"];
+                for(int x=0; x<cartviewlist.Count; x++)
+                {
+                    if (product.Get(cartviewlist[x].product.Product_id) == null)
+                    {
+                        cartviewlist[x].outOfStock = "Out Of Stock";
+                    }
+                    else
+                    {
+                        cartviewlist[x].outOfStock = "";
+                    }
+                }
+               
             }
 
             CartViewModel cartViewModel = new CartViewModel();
@@ -142,7 +156,22 @@ namespace E_Commerce.Controllers
 
         public ActionResult Details(int id)
         {
+            if (Session["LoginID"] != null)
+            {
+                List<OrderProduct> orderProductList = new List<OrderProduct>();
+                ProductHistory producthis = productHistory.GetByProductNameCategory(product.Get(id).Product_name, product.Get(id).CategoryID);
+                int pid = producthis.Product_id;
+                orderProductList = OrderProduct.GetByCustomerId((int)Session["LoginID"], pid);
+                if (orderProductList.Count==0)
+                {
+                    Session["notbuy"] = "In order to review you need to Buy this product";
+                }
+                else
+                {
+                    Session["notbuy"] = null;
+                }
 
+            }
             return View(product.Get(id));
         }
 
@@ -163,7 +192,7 @@ namespace E_Commerce.Controllers
                 return View(product.GetfromSubCategory(id));
             }
         }
-        public ActionResult WomanProductlist(int id, string categoryname)
+        public ActionResult WomenProductlist(int id, string categoryname)
         {
             Session["reid"] = id;
             Session["catname"] = categoryname;
@@ -218,6 +247,243 @@ namespace E_Commerce.Controllers
 
                 return RedirectToAction("Index", "Cart");
             
+        }
+        public ActionResult SortedProductList(string value)
+         {
+            string sortname = value.Split('|')[0];
+            int id = Convert.ToInt32 (value.Split('|')[1]);
+            string categoryname = value.Split('|')[2];
+            Session["reid"] = id;
+            Session["catname"] = categoryname;
+            List<SortViewModel> sortmodel = new List<SortViewModel>();
+            if (sortname == "atoz")
+            {
+                if (categoryname == "f")
+                {
+                    var sortedproduct = product.GetfromFinalCategory(id).OrderBy(x => x.Product_name);
+                    foreach(var item in sortedproduct)
+                    {
+                        sortmodel.Add( new SortViewModel() {
+                            Product_name = item.Product_name,
+                            Product_id  =item.Product_id,
+                            UnitPrice = item.UnitPrice,
+                            ImageFile = item.ImageFile
+                        }  );
+                    }
+                }
+                else if (categoryname == "m")
+                {
+                    var sortedproduct = product.GetfromMainCategory(id).OrderBy(x => x.Product_name);
+                    foreach(var item in sortedproduct)
+                    {
+                        sortmodel.Add( new SortViewModel() {
+                            Product_name = item.Product_name,
+                            Product_id  =item.Product_id,
+                            UnitPrice = item.UnitPrice,
+                            ImageFile = item.ImageFile
+                        }  );
+                    }
+                }
+                else
+                {
+                    var sortedproduct = product.GetfromSubCategory(id).OrderBy(x => x.Product_name);
+                    foreach (var item in sortedproduct)
+                    {
+                        sortmodel.Add(new SortViewModel()
+                        {
+                            Product_name = item.Product_name,
+                            Product_id = item.Product_id,
+                            UnitPrice = item.UnitPrice,
+                            ImageFile = item.ImageFile
+                        });
+                    }
+                }
+            }
+            else if(sortname == "ztoa"){
+                if (categoryname == "f")
+                {
+                    var sortedproduct = product.GetfromFinalCategory(id).OrderByDescending(x => x.Product_name);
+                    foreach (var item in sortedproduct)
+                    {
+                        sortmodel.Add(new SortViewModel()
+                        {
+                            Product_name = item.Product_name,
+                            Product_id = item.Product_id,
+                            UnitPrice = item.UnitPrice,
+                            ImageFile = item.ImageFile
+                        });
+                    }
+                    
+                }
+                else if (categoryname == "m")
+                {
+                    var sortedproduct = product.GetfromMainCategory(id).OrderByDescending(x => x.Product_name);
+                    foreach (var item in sortedproduct)
+                    {
+                        sortmodel.Add(new SortViewModel()
+                        {
+                            Product_name = item.Product_name,
+                            Product_id = item.Product_id,
+                            UnitPrice = item.UnitPrice,
+                            ImageFile = item.ImageFile
+                        });
+                    }
+                }
+                else
+                {
+                    var sortedproduct = product.GetfromSubCategory(id).OrderByDescending(x => x.Product_name);
+                    foreach (var item in sortedproduct)
+                    {
+                        sortmodel.Add(new SortViewModel()
+                        {
+                            Product_name = item.Product_name,
+                            Product_id = item.Product_id,
+                            UnitPrice = item.UnitPrice,
+                            ImageFile = item.ImageFile
+                        });
+                    }
+                }
+            }
+            else if(sortname == "lowtohigh")
+            {
+                if (categoryname == "f")
+                {
+                    var sortedproduct = product.GetfromFinalCategory(id).OrderBy(x => x.UnitPrice);
+                    foreach (var item in sortedproduct)
+                    {
+                        sortmodel.Add(new SortViewModel()
+                        {
+                            Product_name = item.Product_name,
+                            Product_id = item.Product_id,
+                            UnitPrice = item.UnitPrice,
+                            ImageFile = item.ImageFile
+                        });
+                    }
+                    
+                }
+                else if (categoryname == "m")
+                {
+                    var sortedproduct = product.GetfromMainCategory(id).OrderBy(x => x.UnitPrice);
+                    foreach (var item in sortedproduct)
+                    {
+                        sortmodel.Add(new SortViewModel()
+                        {
+                            Product_name = item.Product_name,
+                            Product_id = item.Product_id,
+                            UnitPrice = item.UnitPrice,
+                            ImageFile = item.ImageFile
+                        });
+                    }
+                }
+                else
+                {
+                    var sortedproduct = product.GetfromSubCategory(id).OrderBy(x => x.UnitPrice);
+                    foreach (var item in sortedproduct)
+                    {
+                        sortmodel.Add(new SortViewModel()
+                        {
+                            Product_name = item.Product_name,
+                            Product_id = item.Product_id,
+                            UnitPrice = item.UnitPrice,
+                            ImageFile = item.ImageFile
+                        });
+                    }
+                }
+            }
+            else if(sortname == "hightolow")
+            {
+                if (categoryname == "f")
+                {
+                    var sortedproduct = product.GetfromFinalCategory(id).OrderByDescending(x => x.UnitPrice);
+                    foreach (var item in sortedproduct)
+                    {
+                        sortmodel.Add(new SortViewModel()
+                        {
+                            Product_name = item.Product_name,
+                            Product_id = item.Product_id,
+                            UnitPrice = item.UnitPrice,
+                            ImageFile = item.ImageFile
+                        });
+                    }
+                    
+                }
+                else if (categoryname == "m")
+                {
+                    var sortedproduct = product.GetfromMainCategory(id).OrderByDescending(x => x.UnitPrice);
+                    foreach (var item in sortedproduct)
+                    {
+                        sortmodel.Add(new SortViewModel()
+                        {
+                            Product_name = item.Product_name,
+                            Product_id = item.Product_id,
+                            UnitPrice = item.UnitPrice,
+                            ImageFile = item.ImageFile
+                        });
+                    }
+                }
+                else
+                {
+                    var sortedproduct = product.GetfromSubCategory(id).OrderByDescending(x => x.UnitPrice);
+                    foreach (var item in sortedproduct)
+                    {
+                        sortmodel.Add(new SortViewModel()
+                        {
+                            Product_name = item.Product_name,
+                            Product_id = item.Product_id,
+                            UnitPrice = item.UnitPrice,
+                            ImageFile = item.ImageFile
+                        });
+                    }
+                }
+            }
+            else if (sortname == "default")
+            {
+                if (categoryname == "f")
+                {
+                    var sortedproduct = product.GetfromFinalCategory(id);
+                    foreach (var item in sortedproduct)
+                    {
+                        sortmodel.Add(new SortViewModel()
+                        {
+                            Product_name = item.Product_name,
+                            Product_id = item.Product_id,
+                            UnitPrice = item.UnitPrice,
+                            ImageFile = item.ImageFile
+                        });
+                    }
+
+                }
+                else if (categoryname == "m")
+                {
+                    var sortedproduct = product.GetfromMainCategory(id);
+                    foreach (var item in sortedproduct)
+                    {
+                        sortmodel.Add(new SortViewModel()
+                        {
+                            Product_name = item.Product_name,
+                            Product_id = item.Product_id,
+                            UnitPrice = item.UnitPrice,
+                            ImageFile = item.ImageFile
+                        });
+                    }
+                }
+                else
+                {
+                    var sortedproduct = product.GetfromSubCategory(id);
+                    foreach (var item in sortedproduct)
+                    {
+                        sortmodel.Add(new SortViewModel()
+                        {
+                            Product_name = item.Product_name,
+                            Product_id = item.Product_id,
+                            UnitPrice = item.UnitPrice,
+                            ImageFile = item.ImageFile
+                        });
+                    }
+                }
+            }
+
+            return Json(sortmodel);
         }
     }
 }

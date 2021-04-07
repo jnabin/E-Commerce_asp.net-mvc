@@ -9,6 +9,8 @@
     string c = "x";
     string cname = "DivOverSlide";
     string cnam = "HoverAbleDiv";
+    int i = 1;
+    var cx = subcate.OrderByDescending(dt => dt.Products.Count);
 }
 
 <nav class="hide border-top border-secondary">
@@ -18,7 +20,7 @@
             c = "x" + y;
             if (item.FinalSubCategories.Count == 0 || item.FinalSubCategories == null)
             {
-                <li class="d-inline-block p-3 ml-3 mr-1 NewIn @c "><a href="/Product/LifestyleProductlist/?id=@item.SubCategory_id&categoryname=s">@item.SubCategory_name</a></li>
+                <li class="d-inline-block p-3 ml-3 mr-1 NewIn @c "><a href="/Product/LifestyleProductlist/@item.SubCategory_id?categoryname=s">@item.SubCategory_name</a></li>
             }
             else
             {
@@ -43,7 +45,7 @@
                             @foreach (var item2 in item.FinalSubCategories)
                             {
                                 <li>
-                                    <a href="/Product/LifestyleProductlist/?id=@item2.FinalSubCate_id&categoryname=f">@item2.FinalSubCate_name</a>
+                                    <a href="/Product/LifestyleProductlist/@item2.FinalSubCate_id?categoryname=f">@item2.FinalSubCate_name</a>
                                 </li>
                             }
                         </ul>
@@ -85,26 +87,31 @@
 
 <div class="container mt-4">
     <div class="row text-center">
-        @foreach (var item in subcate)
+        
+        
+        @foreach (var item in cx)
         {
-           
-                <div class="col-md-4">
-                    <div class="bg-hoodies" style="background-image:url('/Content/image/background.PNG');">
-                        <div class="uppercontent">
-                            <div class="content">
-                                <div class="content-name ">
-                                    <p class="text-light mb-1">@item.SubCategory_name</p>
-                                </div>
-                                <div class="shop">
-                                    <p class="text-light">Shop Now</p>
-                                </div>
-                                <a class="full-link" href="/Product/LifestyleProductlist/?id=@item.SubCategory_id&categoryname=s">Shop Now</a>
+            if (i > 2 || (item.Products.Count == 0))
+            {
+                break;
+            }
+            <div class="col-md-4">
+                <div class="bg-hoodies" style="background-image:url('/Content/image/background.PNG');">
+                    <div class="uppercontent">
+                        <div class="content">
+                            <div class="content-name ">
+                                <p class="text-light mb-1">@item.SubCategory_name</p>
                             </div>
+                            <div class="shop">
+                                <p class="text-light">Shop Now</p>
+                            </div>
+                            <a class="full-link" href="/Product/ManProductlist/@item.SubCategory_id?categoryname=s">Shop Now</a>
                         </div>
                     </div>
                 </div>
-            
-   
+            </div>
+            i++;
+       
         }
 
     </div>

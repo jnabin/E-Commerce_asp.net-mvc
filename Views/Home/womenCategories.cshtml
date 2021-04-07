@@ -18,7 +18,7 @@
             c = "x" + y;
             if (item.FinalSubCategories.Count == 0 || item.FinalSubCategories == null)
             {
-                <li class="d-inline-block p-3 ml-3 mr-1 NewIn @c "><a href="/Product/WomenProductlist/?id=@item.SubCategory_id&categoryname=s">@item.SubCategory_name</a></li>
+                <li class="d-inline-block p-3 ml-3 mr-1 NewIn @c "><a href="/Product/WomenProductlist/@item.SubCategory_id?categoryname=s">@item.SubCategory_name</a></li>
             }
             else
             {
@@ -43,7 +43,7 @@
                             @foreach (var item2 in item.FinalSubCategories)
                             {
                                 <li>
-                                    <a href="/Product/WomenProductlist/id=@item2.FinalSubCate_id&&categoryname=f">@item2.FinalSubCate_name</a>
+                                    <a href="/Product/WomenProductlist/@item2.FinalSubCate_id?categoryname=f">@item2.FinalSubCate_name</a>
                                 </li>
                             }
                         </ul>
@@ -87,29 +87,35 @@
     <div class="row text-center">
         @foreach (var item in subcate)
         {
-            if (item.SubCategory_id == 9)
+
+            var cx = item.FinalSubCategories.OrderByDescending(dt => dt.Products.Count);
+            int i = 1;
+            foreach (var item2 in cx)
             {
-                foreach (var item2 in item.FinalSubCategories)
+                if (i > 2 || (item2.Products.Count == 0))
                 {
-                    <div class="col-md-4">
-                        <div class="bg-hoodies" style="background-image:url('/Content/image/background.PNG');">
-                            <div class="uppercontent">
-                                <div class="content">
-                                    <div class="content-name ">
-                                        <p class="text-light mb-1">@item2.FinalSubCate_name</p>
-                                    </div>
-                                    <div class="shop">
-                                        <p class="text-light">Shop Now</p>
-                                    </div>
-                                    <a class="full-link" href="/Product/WomenProductlist/id=@item2.FinalSubCate_id&&categoryname=f">Shop Now</a>
+                    break;
+                }
+                <div class="col-md-4">
+                    <div class="bg-hoodies" style="background-image:url('/Content/image/background.PNG');">
+                        <div class="uppercontent">
+                            <div class="content">
+                                <div class="content-name ">
+                                    <p class="text-light mb-1">@item2.FinalSubCate_name</p>
                                 </div>
+                                <div class="shop">
+                                    <p class="text-light">Shop Now</p>
+                                </div>
+                                <a class="full-link" href="/Product/WomenProductlist/@item2.FinalSubCate_id?categoryname=f">Shop Now</a>
                             </div>
                         </div>
                     </div>
-                }
-                break;
-
+                </div>
+                i++;
             }
+
+
+
 
         }
 

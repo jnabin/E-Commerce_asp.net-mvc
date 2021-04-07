@@ -68,11 +68,10 @@
     </Key>
     <Property Name="OrderID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
     <Property Name="date" Type="date" Nullable="false" />
-    <Property Name="Subtotal" Type="money" Nullable="false" />
-    <Property Name="tax" Type="money" Nullable="false" />
-    <Property Name="total" Type="money" Nullable="false" />
-    <Property Name="CustomerID" Type="int" Nullable="false" />
-    <Property Name="OrderProductID" Type="int" Nullable="false" />
+    <Property Name="totalAmount" Type="money" Nullable="false" />
+    <Property Name="Size" Type="varchar" MaxLength="20" />
+    <Property Name="Quantity" Type="int" Nullable="false" />
+    <Property Name="PayMentMethod" Type="varchar" MaxLength="25" />
   </EntityType>
   <EntityType Name="OrderProduct">
     <Key>
@@ -81,32 +80,68 @@
     <Property Name="ProductOrderID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
     <Property Name="OrderID" Type="int" Nullable="false" />
     <Property Name="ProductID" Type="int" Nullable="false" />
+    <Property Name="CustomerID" Type="int" Nullable="false" />
+  </EntityType>
+  <EntityType Name="ProductHistory">
+    <Key>
+      <PropertyRef Name="Product_id" />
+    </Key>
+    <Property Name="Product_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Description" Type="varchar" MaxLength="100" Nullable="false" />
+    <Property Name="CategoryID" Type="int" Nullable="false" />
+    <Property Name="UnitPrice" Type="money" Nullable="false" />
+    <Property Name="ImageFile" Type="varchar" MaxLength="500" Nullable="false" />
+    <Property Name="Cost" Type="money" Nullable="false" />
+    <Property Name="SaleID" Type="int" />
+    <Property Name="FinalSubCategoryID" Type="int" />
+    <Property Name="Product_name" Type="varchar" MaxLength="50" Nullable="false" />
+    <Property Name="SubCategoryID" Type="int" />
+    <Property Name="SizeCategory" Type="varchar" MaxLength="15" Nullable="false" />
+    <Property Name="AddedDate" Type="datetime" />
   </EntityType>
   <EntityType Name="Products">
     <Key>
       <PropertyRef Name="Product_id" />
     </Key>
     <Property Name="Product_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-    <Property Name="Product_name" Type="varchar" MaxLength="50" Nullable="false" />
     <Property Name="Description" Type="varchar" MaxLength="100" Nullable="false" />
     <Property Name="CategoryID" Type="int" Nullable="false" />
     <Property Name="UnitPrice" Type="money" Nullable="false" />
-    <Property Name="Onhand" Type="int" Nullable="false" />
     <Property Name="ImageFile" Type="varchar" MaxLength="500" Nullable="false" />
     <Property Name="Cost" Type="money" Nullable="false" />
     <Property Name="SaleID" Type="int" />
     <Property Name="FinalSubCategoryID" Type="int" />
+    <Property Name="Product_name" Type="varchar" MaxLength="50" Nullable="false" />
     <Property Name="SubCategoryID" Type="int" />
     <Property Name="SizeCategory" Type="varchar" MaxLength="15" Nullable="false" />
+    <Property Name="AddedDate" Type="datetime" />
+    <Property Name="OnHand" Type="int" />
   </EntityType>
   <EntityType Name="ProductSize">
     <Key>
       <PropertyRef Name="ProductSizeID" />
     </Key>
     <Property Name="ProductSizeID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-    <Property Name="SizeName" Type="varchar" MaxLength="10" Nullable="false" />
+    <Property Name="SizeName" Type="varchar" MaxLength="20" Nullable="false" />
     <Property Name="ProductID" Type="int" Nullable="false" />
     <Property Name="Count" Type="int" Nullable="false" />
+  </EntityType>
+  <EntityType Name="ProductSizeHistory">
+    <Key>
+      <PropertyRef Name="ProductSizeID" />
+    </Key>
+    <Property Name="ProductSizeID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="SizeName" Type="varchar" MaxLength="20" Nullable="false" />
+    <Property Name="ProductID" Type="int" Nullable="false" />
+    <Property Name="Count" Type="int" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Profit">
+    <Key>
+      <PropertyRef Name="Profit_ID" />
+    </Key>
+    <Property Name="Profit_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="ProductOrderID" Type="int" Nullable="false" />
+    <Property Name="ProfitAmount" Type="money" Nullable="false" />
   </EntityType>
   <EntityType Name="Report">
     <Key>
@@ -124,6 +159,7 @@
     <Property Name="Description" Type="varchar" MaxLength="200" Nullable="false" />
     <Property Name="ProductID" Type="int" Nullable="false" />
     <Property Name="CustomerID" Type="int" Nullable="false" />
+    <Property Name="ReviewTitle" Type="varchar" MaxLength="30" Nullable="false" />
   </EntityType>
   <EntityType Name="Sale">
     <Key>
@@ -156,55 +192,87 @@
       </Dependent>
     </ReferentialConstraint>
   </Association>
-  <Association Name="FK_Order_Customer">
-    <End Role="Customer" Type="Self.Customer" Multiplicity="1">
-      <OnDelete Action="Cascade" />
-    </End>
-    <End Role="Order" Type="Self.Order" Multiplicity="*" />
+  <Association Name="FK_OrderProduct_Customer">
+    <End Role="Customer" Type="Self.Customer" Multiplicity="1" />
+    <End Role="OrderProduct" Type="Self.OrderProduct" Multiplicity="*" />
     <ReferentialConstraint>
       <Principal Role="Customer">
         <PropertyRef Name="CustomerID" />
       </Principal>
-      <Dependent Role="Order">
+      <Dependent Role="OrderProduct">
         <PropertyRef Name="CustomerID" />
       </Dependent>
     </ReferentialConstraint>
   </Association>
-  <Association Name="FK_Order_OrderProduct">
-    <End Role="OrderProduct" Type="Self.OrderProduct" Multiplicity="1">
-      <OnDelete Action="Cascade" />
-    </End>
-    <End Role="Order" Type="Self.Order" Multiplicity="*" />
-    <ReferentialConstraint>
-      <Principal Role="OrderProduct">
-        <PropertyRef Name="ProductOrderID" />
-      </Principal>
-      <Dependent Role="Order">
-        <PropertyRef Name="OrderProductID" />
-      </Dependent>
-    </ReferentialConstraint>
-  </Association>
   <Association Name="FK_OrderProduct_OrderProduct">
-    <End Role="OrderProduct" Type="Self.OrderProduct" Multiplicity="1" />
-    <End Role="OrderProduct1" Type="Self.OrderProduct" Multiplicity="0..1" />
-    <ReferentialConstraint>
-      <Principal Role="OrderProduct">
-        <PropertyRef Name="ProductOrderID" />
-      </Principal>
-      <Dependent Role="OrderProduct1">
-        <PropertyRef Name="ProductOrderID" />
-      </Dependent>
-    </ReferentialConstraint>
-  </Association>
-  <Association Name="FK_OrderProduct_Products">
-    <End Role="Products" Type="Self.Products" Multiplicity="1" />
+    <End Role="Order" Type="Self.Order" Multiplicity="1" />
     <End Role="OrderProduct" Type="Self.OrderProduct" Multiplicity="*" />
     <ReferentialConstraint>
-      <Principal Role="Products">
+      <Principal Role="Order">
+        <PropertyRef Name="OrderID" />
+      </Principal>
+      <Dependent Role="OrderProduct">
+        <PropertyRef Name="OrderID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_OrderProduct_ProductHistory">
+    <End Role="ProductHistory" Type="Self.ProductHistory" Multiplicity="1" />
+    <End Role="OrderProduct" Type="Self.OrderProduct" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="ProductHistory">
         <PropertyRef Name="Product_id" />
       </Principal>
       <Dependent Role="OrderProduct">
         <PropertyRef Name="ProductID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_ProductHistory_FinalSubCategory">
+    <End Role="FinalSubCategory" Type="Self.FinalSubCategory" Multiplicity="0..1" />
+    <End Role="ProductHistory" Type="Self.ProductHistory" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="FinalSubCategory">
+        <PropertyRef Name="FinalSubCate_id" />
+      </Principal>
+      <Dependent Role="ProductHistory">
+        <PropertyRef Name="FinalSubCategoryID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_ProductHistory_MainCategory">
+    <End Role="MainCategory" Type="Self.MainCategory" Multiplicity="1" />
+    <End Role="ProductHistory" Type="Self.ProductHistory" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="MainCategory">
+        <PropertyRef Name="Category_id" />
+      </Principal>
+      <Dependent Role="ProductHistory">
+        <PropertyRef Name="CategoryID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_ProductHistory_Sale">
+    <End Role="Sale" Type="Self.Sale" Multiplicity="0..1" />
+    <End Role="ProductHistory" Type="Self.ProductHistory" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Sale">
+        <PropertyRef Name="SaleID" />
+      </Principal>
+      <Dependent Role="ProductHistory">
+        <PropertyRef Name="SaleID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_ProductHistory_SubCatetory">
+    <End Role="SubCatetory" Type="Self.SubCatetory" Multiplicity="0..1" />
+    <End Role="ProductHistory" Type="Self.ProductHistory" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="SubCatetory">
+        <PropertyRef Name="SubCategory_id" />
+      </Principal>
+      <Dependent Role="ProductHistory">
+        <PropertyRef Name="SubCategoryID" />
       </Dependent>
     </ReferentialConstraint>
   </Association>
@@ -265,6 +333,30 @@
       </Principal>
       <Dependent Role="ProductSize">
         <PropertyRef Name="ProductID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_ProductSizeHistory_ProductHistory">
+    <End Role="ProductHistory" Type="Self.ProductHistory" Multiplicity="1" />
+    <End Role="ProductSizeHistory" Type="Self.ProductSizeHistory" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="ProductHistory">
+        <PropertyRef Name="Product_id" />
+      </Principal>
+      <Dependent Role="ProductSizeHistory">
+        <PropertyRef Name="ProductID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Profit_OrderProduct">
+    <End Role="OrderProduct" Type="Self.OrderProduct" Multiplicity="1" />
+    <End Role="Profit" Type="Self.Profit" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="OrderProduct">
+        <PropertyRef Name="ProductOrderID" />
+      </Principal>
+      <Dependent Role="Profit">
+        <PropertyRef Name="ProductOrderID" />
       </Dependent>
     </ReferentialConstraint>
   </Association>
@@ -330,8 +422,11 @@
     <EntitySet Name="Manager" EntityType="Self.Manager" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="Order" EntityType="Self.Order" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="OrderProduct" EntityType="Self.OrderProduct" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="ProductHistory" EntityType="Self.ProductHistory" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="Products" EntityType="Self.Products" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="ProductSize" EntityType="Self.ProductSize" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="ProductSizeHistory" EntityType="Self.ProductSizeHistory" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Profit" EntityType="Self.Profit" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="Report" EntityType="Self.Report" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="Review" EntityType="Self.Review" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="Sale" EntityType="Self.Sale" Schema="dbo" store:Type="Tables" />
@@ -340,21 +435,33 @@
       <End Role="SubCatetory" EntitySet="SubCatetory" />
       <End Role="FinalSubCategory" EntitySet="FinalSubCategory" />
     </AssociationSet>
-    <AssociationSet Name="FK_Order_Customer" Association="Self.FK_Order_Customer">
+    <AssociationSet Name="FK_OrderProduct_Customer" Association="Self.FK_OrderProduct_Customer">
       <End Role="Customer" EntitySet="Customer" />
-      <End Role="Order" EntitySet="Order" />
-    </AssociationSet>
-    <AssociationSet Name="FK_Order_OrderProduct" Association="Self.FK_Order_OrderProduct">
       <End Role="OrderProduct" EntitySet="OrderProduct" />
-      <End Role="Order" EntitySet="Order" />
     </AssociationSet>
     <AssociationSet Name="FK_OrderProduct_OrderProduct" Association="Self.FK_OrderProduct_OrderProduct">
+      <End Role="Order" EntitySet="Order" />
       <End Role="OrderProduct" EntitySet="OrderProduct" />
-      <End Role="OrderProduct1" EntitySet="OrderProduct" />
     </AssociationSet>
-    <AssociationSet Name="FK_OrderProduct_Products" Association="Self.FK_OrderProduct_Products">
-      <End Role="Products" EntitySet="Products" />
+    <AssociationSet Name="FK_OrderProduct_ProductHistory" Association="Self.FK_OrderProduct_ProductHistory">
+      <End Role="ProductHistory" EntitySet="ProductHistory" />
       <End Role="OrderProduct" EntitySet="OrderProduct" />
+    </AssociationSet>
+    <AssociationSet Name="FK_ProductHistory_FinalSubCategory" Association="Self.FK_ProductHistory_FinalSubCategory">
+      <End Role="FinalSubCategory" EntitySet="FinalSubCategory" />
+      <End Role="ProductHistory" EntitySet="ProductHistory" />
+    </AssociationSet>
+    <AssociationSet Name="FK_ProductHistory_MainCategory" Association="Self.FK_ProductHistory_MainCategory">
+      <End Role="MainCategory" EntitySet="MainCategory" />
+      <End Role="ProductHistory" EntitySet="ProductHistory" />
+    </AssociationSet>
+    <AssociationSet Name="FK_ProductHistory_Sale" Association="Self.FK_ProductHistory_Sale">
+      <End Role="Sale" EntitySet="Sale" />
+      <End Role="ProductHistory" EntitySet="ProductHistory" />
+    </AssociationSet>
+    <AssociationSet Name="FK_ProductHistory_SubCatetory" Association="Self.FK_ProductHistory_SubCatetory">
+      <End Role="SubCatetory" EntitySet="SubCatetory" />
+      <End Role="ProductHistory" EntitySet="ProductHistory" />
     </AssociationSet>
     <AssociationSet Name="FK_Products_FinalSubCategory1" Association="Self.FK_Products_FinalSubCategory1">
       <End Role="FinalSubCategory" EntitySet="FinalSubCategory" />
@@ -375,6 +482,14 @@
     <AssociationSet Name="FK_ProductSize_Products" Association="Self.FK_ProductSize_Products">
       <End Role="Products" EntitySet="Products" />
       <End Role="ProductSize" EntitySet="ProductSize" />
+    </AssociationSet>
+    <AssociationSet Name="FK_ProductSizeHistory_ProductHistory" Association="Self.FK_ProductSizeHistory_ProductHistory">
+      <End Role="ProductHistory" EntitySet="ProductHistory" />
+      <End Role="ProductSizeHistory" EntitySet="ProductSizeHistory" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Profit_OrderProduct" Association="Self.FK_Profit_OrderProduct">
+      <End Role="OrderProduct" EntitySet="OrderProduct" />
+      <End Role="Profit" EntitySet="Profit" />
     </AssociationSet>
     <AssociationSet Name="FK_Report_Customer" Association="Self.FK_Report_Customer">
       <End Role="Customer" EntitySet="Customer" />

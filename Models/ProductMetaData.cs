@@ -19,9 +19,6 @@ namespace E_Commerce.Models
         [DataType(DataType.Currency)]
         [Range(1, 99999.99, ErrorMessage = "invalid amount of price")]
         public decimal UnitPrice { get; set; }
-        [Required]
-        [Range(1,50, ErrorMessage ="onhand quantity should be between 1 to 50")]
-        public int Onhand { get; set; }
         public string ImageFile { get; set; }
         [Required]
         [DataType(DataType.Currency)]

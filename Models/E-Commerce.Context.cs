@@ -32,11 +32,14 @@ namespace E_Commerce.Models
         public virtual DbSet<Manager> Managers { get; set; }
         public virtual DbSet<Order> Orders { get; set; }
         public virtual DbSet<OrderProduct> OrderProducts { get; set; }
+        public virtual DbSet<ProductHistory> ProductHistories { get; set; }
         public virtual DbSet<Product> Products { get; set; }
         public virtual DbSet<ProductSize> ProductSizes { get; set; }
+        public virtual DbSet<ProductSizeHistory> ProductSizeHistories { get; set; }
         public virtual DbSet<Report> Reports { get; set; }
         public virtual DbSet<Review> Reviews { get; set; }
         public virtual DbSet<Sale> Sales { get; set; }
         public virtual DbSet<SubCatetory> SubCatetories { get; set; }
+        public virtual DbSet<Profit> Profits { get; set; }
     }
 }

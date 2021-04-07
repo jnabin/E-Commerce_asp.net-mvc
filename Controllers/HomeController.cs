@@ -18,11 +18,19 @@ namespace E_Commerce.Controllers
         // GET: Home
         public ActionResult Index()
         {
+            Session["admin"] = null;
+            Session["adminLoginID"] = null;
+            Session["adminUserName"] = null;
+            Session["paymentmethod"] = null;
             return View();
         }
         public ActionResult getProducts(int id, int category)
         {
-            if(category == 1)
+            Session["admin"] = null;
+            Session["adminLoginID"] = null;
+            Session["adminUserName"] = null;
+            Session["paymentmethod"] = null;
+            if (category == 1)
             {
                 mainCategoryRepository.Get(id);
                 return View(mainCategoryRepository);
@@ -42,24 +50,40 @@ namespace E_Commerce.Controllers
         [HttpGet]
         public ActionResult manCategories(int id)
         {
+            Session["admin"] = null;
+            Session["adminLoginID"] = null;
+            Session["adminUserName"] = null;
+            Session["paymentmethod"] = null;
             return View(mainCategoryRepository.Get(id));
         }
 
         [HttpGet]
         public ActionResult womenCategories(int id)
         {
+            Session["admin"] = null;
+            Session["adminLoginID"] = null;
+            Session["adminUserName"] = null;
+            Session["paymentmethod"] = null;
             return View(mainCategoryRepository.Get(id));
         }
 
         [HttpGet]
         public ActionResult lifestylesCategories(int id)
         {
+            Session["admin"] = null;
+            Session["adminLoginID"] = null;
+            Session["adminUserName"] = null;
+            Session["paymentmethod"] = null;
             return View(mainCategoryRepository.Get(id));
         }
 
         [HttpGet]
         public ActionResult saleProducts(int id)
         {
+            Session["admin"] = null;
+            Session["adminLoginID"] = null;
+            Session["adminUserName"] = null;
+            Session["paymentmethod"] = null;
             return View(mainCategoryRepository.Get(id));
         }
     }

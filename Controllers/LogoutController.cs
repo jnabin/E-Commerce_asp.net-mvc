@@ -11,7 +11,10 @@ namespace E_Commerce.Controllers
         // GET: Logout
         public ActionResult Index()
         {
+            
+            var cart = Session["cart"];
             Session.Clear();
+            Session["cart"] = cart;
             return RedirectToAction("Index", "Home");
         }
     }

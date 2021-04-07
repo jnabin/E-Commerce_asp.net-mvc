@@ -11,5 +11,6 @@ namespace E_Commerce.Models.ViewModels
         public Product product { get; set; }
         public int count { get; set; }
         public ProductSize size { get; set; }
+        public string outOfStock { get; set; }
     }
 }

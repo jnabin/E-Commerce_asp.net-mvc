@@ -71,13 +71,12 @@
     <EntitySetMapping Name="Orders">
       <EntityTypeMapping TypeName="Model.Order">
         <MappingFragment StoreEntitySet="Order">
+          <ScalarProperty Name="PayMentMethod" ColumnName="PayMentMethod" />
           <ScalarProperty Name="OrderID" ColumnName="OrderID" />
           <ScalarProperty Name="date" ColumnName="date" />
-          <ScalarProperty Name="Subtotal" ColumnName="Subtotal" />
-          <ScalarProperty Name="tax" ColumnName="tax" />
-          <ScalarProperty Name="total" ColumnName="total" />
-          <ScalarProperty Name="CustomerID" ColumnName="CustomerID" />
-          <ScalarProperty Name="OrderProductID" ColumnName="OrderProductID" />
+          <ScalarProperty Name="totalAmount" ColumnName="totalAmount" />
+          <ScalarProperty Name="Size" ColumnName="Size" />
+          <ScalarProperty Name="Quantity" ColumnName="Quantity" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
@@ -87,32 +86,62 @@
           <ScalarProperty Name="ProductOrderID" ColumnName="ProductOrderID" />
           <ScalarProperty Name="OrderID" ColumnName="OrderID" />
           <ScalarProperty Name="ProductID" ColumnName="ProductID" />
+          <ScalarProperty Name="CustomerID" ColumnName="CustomerID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="ProductHistories">
+      <EntityTypeMapping TypeName="Model.ProductHistory">
+        <MappingFragment StoreEntitySet="ProductHistory">
+          <ScalarProperty Name="Product_id" ColumnName="Product_id" />
+          <ScalarProperty Name="Description" ColumnName="Description" />
+          <ScalarProperty Name="CategoryID" ColumnName="CategoryID" />
+          <ScalarProperty Name="UnitPrice" ColumnName="UnitPrice" />
+          <ScalarProperty Name="ImageFile" ColumnName="ImageFile" />
+          <ScalarProperty Name="Cost" ColumnName="Cost" />
+          <ScalarProperty Name="SaleID" ColumnName="SaleID" />
+          <ScalarProperty Name="FinalSubCategoryID" ColumnName="FinalSubCategoryID" />
+          <ScalarProperty Name="Product_name" ColumnName="Product_name" />
+          <ScalarProperty Name="SubCategoryID" ColumnName="SubCategoryID" />
+          <ScalarProperty Name="SizeCategory" ColumnName="SizeCategory" />
+          <ScalarProperty Name="AddedDate" ColumnName="AddedDate" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
     <EntitySetMapping Name="Products">
       <EntityTypeMapping TypeName="Model.Product">
         <MappingFragment StoreEntitySet="Products">
-          <ScalarProperty Name="SizeCategory" ColumnName="SizeCategory" />
+          <ScalarProperty Name="OnHand" ColumnName="OnHand" />
           <ScalarProperty Name="Product_id" ColumnName="Product_id" />
-          <ScalarProperty Name="Product_name" ColumnName="Product_name" />
           <ScalarProperty Name="Description" ColumnName="Description" />
           <ScalarProperty Name="CategoryID" ColumnName="CategoryID" />
           <ScalarProperty Name="UnitPrice" ColumnName="UnitPrice" />
-          <ScalarProperty Name="Onhand" ColumnName="Onhand" />
           <ScalarProperty Name="ImageFile" ColumnName="ImageFile" />
           <ScalarProperty Name="Cost" ColumnName="Cost" />
           <ScalarProperty Name="SaleID" ColumnName="SaleID" />
           <ScalarProperty Name="FinalSubCategoryID" ColumnName="FinalSubCategoryID" />
+          <ScalarProperty Name="Product_name" ColumnName="Product_name" />
           <ScalarProperty Name="SubCategoryID" ColumnName="SubCategoryID" />
+          <ScalarProperty Name="SizeCategory" ColumnName="SizeCategory" />
+          <ScalarProperty Name="AddedDate" ColumnName="AddedDate" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
     <EntitySetMapping Name="ProductSizes">
       <EntityTypeMapping TypeName="Model.ProductSize">
         <MappingFragment StoreEntitySet="ProductSize">
-          <ScalarProperty Name="SizeName" ColumnName="SizeName" />
           <ScalarProperty Name="ProductSizeID" ColumnName="ProductSizeID" />
+          <ScalarProperty Name="SizeName" ColumnName="SizeName" />
+          <ScalarProperty Name="ProductID" ColumnName="ProductID" />
+          <ScalarProperty Name="Count" ColumnName="Count" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="ProductSizeHistories">
+      <EntityTypeMapping TypeName="Model.ProductSizeHistory">
+        <MappingFragment StoreEntitySet="ProductSizeHistory">
+          <ScalarProperty Name="ProductSizeID" ColumnName="ProductSizeID" />
+          <ScalarProperty Name="SizeName" ColumnName="SizeName" />
           <ScalarProperty Name="ProductID" ColumnName="ProductID" />
           <ScalarProperty Name="Count" ColumnName="Count" />
         </MappingFragment>
@@ -134,6 +163,7 @@
           <ScalarProperty Name="Description" ColumnName="Description" />
           <ScalarProperty Name="ProductID" ColumnName="ProductID" />
           <ScalarProperty Name="CustomerID" ColumnName="CustomerID" />
+          <ScalarProperty Name="ReviewTitle" ColumnName="ReviewTitle" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
@@ -153,6 +183,15 @@
           <ScalarProperty Name="SubCategory_id" ColumnName="SubCategory_id" />
           <ScalarProperty Name="SubCategory_name" ColumnName="SubCategory_name" />
           <ScalarProperty Name="MCategory_id" ColumnName="MCategory_id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Profits">
+      <EntityTypeMapping TypeName="Model.Profit">
+        <MappingFragment StoreEntitySet="Profit">
+          <ScalarProperty Name="ProfitAmount" ColumnName="ProfitAmount" />
+          <ScalarProperty Name="ProductOrderID" ColumnName="ProductOrderID" />
+          <ScalarProperty Name="Profit_ID" ColumnName="Profit_ID" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>

@@ -10,7 +10,8 @@ namespace E_Commerce.Controllers
 {
     public class CustomerController : Controller
     {
-        CustomerRepository customerRepository = new CustomerRepository();
+        private CustomerRepository customerRepository = new CustomerRepository();
+        private ReviewRepository reviewModel = new ReviewRepository();
         // GET: Customer
         public ActionResult Index()
         {
@@ -36,6 +37,15 @@ namespace E_Commerce.Controllers
                 return RedirectToAction("Index");
         }
 
+
+        [HttpPost]
+        public ActionResult updateInfoDuringCheckout(Customer customer)
+        {
+            customerRepository.Update(customer);
+            return Json("Success");
+        }
+
+
         [HttpPost]
         public ActionResult updateImage(Customer customer, HttpPostedFileBase file)
         {
@@ -59,6 +69,11 @@ namespace E_Commerce.Controllers
             
             return RedirectToAction("Index");
 
+        }
+        public ActionResult AddReview(Review review)
+        {
+            reviewModel.Insert(review);
+            return Json("success");
         }
     }
 }

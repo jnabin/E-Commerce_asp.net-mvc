@@ -78,24 +78,171 @@
         </div>
     </div>
 </div>
+<hr />
+<br />
+
+<div class="container">
+    <div class="row">
+        <div class="col-3"></div>
+        <div class="col-6">
+            @if (Session["LoginID"] == null)
+            {
+                <p class="mb-2" style="color:red">Only registered users can write review</p>
+                <form  onsubmit="return false">
+                    <div class="form-group">
+                        <label for="ReviewTitle">REVIEW TITLE:</label>
+                        <input type="text" class="form-control" id="ReviewTitle" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="ReviewText">RIVIEW TEXT</label>
+                        <textarea class="form-control" id="ReviewText" disabled></textarea>
+
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            }
+            else if (Session["notbuy"] != null)
+            {
+                var msg = (string)Session["notbuy"];
+                <p class="mb-2" style="color:red">@msg</p>
+                <form onsubmit="return false">
+                   
+                    <div class="form-group">
+                        <label for="ReviewTitle">REVIEW TITLE:</label>
+                        <input type="text" class="form-control" id="ReviewTitle" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="ReviewText">RIVIEW TEXT</label>
+                        <textarea class="form-control" id="ReviewText" disabled></textarea>
+
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            }
+            else
+            {
+                
+                    var cid = (int)Session["LoginID"];
+                 
+                <form class="mt-1" onsubmit="return submitreview()" id="ajaxsubmit">
+                    <input type="hidden" name="ProductID" value="@Model.Product_id" />
+                    <input type="hidden" name="CustomerID" value="@cid" />
+                    <div class="form-group">
+                        <label for="ReviewTitle">REVIEW TITLE:</label>
+                        <input type="text" class="form-control" name="ReviewTitle" id="ReviewTitle" >
+                        <div class="titlerr"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="ReviewText">RIVIEW TEXT</label>
+                        <textarea class="form-control" name="Description" id="ReviewText"></textarea>
+                        <div class="deserr"></div>
+                    </div>
+                    <button type="submit" id="addattr" class="btn btn-primary">Submit</button>
+                </form>
+            }
+        </div>
+        <div class="col-3"></div>
+    </div>
+</div>
+<br />
+<hr />
+
+<div id="ReviewModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header deleteHeader">
+
+            </div>
+            <div class="modal-body deleteBody">
+
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
+
+    function submitreview() {
+        if ($("#ReviewTitle").val().length == 0) {
+            $(".titlerr").empty();
+            $(".titlerr").append(`<p class="reviewerr" style="color:red">Title is required</p>`);
+        }
+        if ($("#ReviewText").val().length == 0) {
+            $(".deserr").empty();
+            $(".deserr").append(`<p class="reviewerr" style="color:red">Review text is required</p>`);
+        }
+        if ($(".reviewerr").length >0) {
+            return false;
+        } else {
+            var valdata = $("#ajaxsubmit").serialize();
+            $.ajax({
+                type: "POST",
+                datatype: "json",
+                url: '@Url.Action("AddReview", "Customer")',
+                data: valdata,
+                success: function (response) {
+                    if (response == "success") {
+                        var myModal = new bootstrap.Modal(document.getElementById('ReviewModal'));
+                        myModal.toggle();
+                        $(".modal-header").empty();
+                        $(".modal-body").empty();
+                        $(".modal-header").append(`<h5 class="modal-title">Success</h5><button type="button"  class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`);
+                        $(".modal-body").append(`<p class="text-success">review submitted successfully</p>`);
+                        $(".modal-body").append(`<button type = "button" class="ml-2 btn btn-primary" data-dismiss="modal">Close </button >`);
+                        $("#ReviewTitle").val("");
+                        $("#ReviewText").val("");
+                    }
+                }
+            });
+            return false;
+        }
+    }
+    $("#ReviewTitle").change(function () {
+        if ($("#ReviewTitle").val().length < 4 || $("#ReviewTitle").val().length > 20) {
+            $(".titlerr").empty();
+            $(".titlerr").append(`<p class="reviewerr" style="color:red">Title length should between 4 to 20</p>`);
+        } else {
+            $(".titlerr").empty();
+        }
+    });
+    $("#ReviewText").change(function () {
+        if ($("#ReviewText").val().length < 15 || $("#ReviewText").val().length > 199) {
+            $(".deserr").empty();
+            $(".deserr").append(`<p class="reviewerr" style="color:red">Review text length should between 4 to 199</p>`);
+        } else {
+            $(".deserr").empty();
+        }
+    });
     function increment() {
+        $("#erroms").empty();
         document.getElementById('demoInput').stepUp();
     }
     function decrement() {
+        $("#erroms").empty();
         document.getElementById('demoInput').stepDown();
     }
+    
     $("#demoInput").change(function () {
         if (Number($("#selectsize").val().split('|')[1]) < ($("#demoInput").val())) {
+            $("#erroms").empty();
             $("#erroms").append(`<p style="color:red" id="counterror">Not Available.Available Quantity is ${$("#selectsize").val().split('|')[1]}</p>`);
+        } else {
+            $("#erroms").empty();
         }
     });
     function validateForm() {
+        var value = Number($("#demoInput").val());
+
+        if (Number($("#selectsize").val().split('|')[1]) < ($("#demoInput").val())) {
+            $("#erroms").empty();
+            $("#erroms").append(`<p style="color:red" id="counterror">Not Available.Available Quantity is ${$("#selectsize").val().split('|')[1]}</p>`);
+        } 
         if ($("#counterror").length) {
             return false;
         } else {
             return true;
-        }  
+        }
+        
     }
 </script>
 

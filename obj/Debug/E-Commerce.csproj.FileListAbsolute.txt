@@ -53,3 +53,5 @@ C:\Users\ASUS\Documents\E-Commerce\E-Commerce\obj\Debug\E-Commerce.dll
 C:\Users\ASUS\Documents\E-Commerce\E-Commerce\obj\Debug\E-Commerce.pdb
 C:\Users\ASUS\Documents\E-Commerce\E-Commerce\bin\Newtonsoft.Json.dll
 C:\Users\ASUS\Documents\E-Commerce\E-Commerce\bin\Newtonsoft.Json.xml
+C:\Users\ASUS\Documents\E-Commerce\E-Commerce\bin\PayPal.dll
+C:\Users\ASUS\Documents\E-Commerce\E-Commerce\bin\PayPal.xml

@@ -4,7 +4,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     var c = Model;
     double total = 0;
-    
+    var errorcheckig = "";
 
 }
 
@@ -47,9 +47,7 @@
 {
 
 
-<form id="hideonempty">
-
-
+<form id="hideonempty" onsubmit="return validate();" action="/Cart/Checkout" method="get">
     @foreach (var item in Model)
     {
         int i = 0;
@@ -74,7 +72,15 @@
                         {
                             <p>SIZE:&nbsp;@item.size.SizeName</p>
                         }
-                        <a class="font-weight-bold" href="/Product/EditCartItem/@i">EDIT</a>
+                        @if (item.outOfStock == "Out Of Stock")
+                        {
+                            errorcheckig = item.outOfStock;
+                            <p class="stockout" style="color:red">@item.outOfStock</p>
+                        }
+                        else
+                        {
+                            <a class="font-weight-bold" href="/Product/EditCartItem/@i">EDIT</a>
+                        }
                     </div>
                 </div>
                 <div class="col-1">
@@ -100,7 +106,8 @@
         <div class="row">
             <div class="col-9"></div>
             <div class="col-3">
-                <a class="border border-secondary p-2" href="/Home/Index">Continue Shopping</a>
+                <button class="btn btn-light border border-secondary p-2" onClick="history.go(-1); return false;">Continue Shopping</button>
+               
                 <div class="bg-light p-2 mt-4">
                     <table>
                         <tr>
@@ -131,7 +138,14 @@
                  
                 </div>
                 <div class="mt-2">
-                    <button class="btn btn-dark" type="submit">NEXT</button>
+                    @if (errorcheckig.Length < 1)
+                    {
+                        <button class="btn btn-dark" type="submit">NEXT</button>
+                    }
+                    else
+                    {
+                        <button class="btn btn-dark" type="submit" data-toggle="modal" data-target="#StockOutModal">NEXT</button>
+                    }
                 </div>
             </div>
         </div>
@@ -151,7 +165,34 @@
     <p style="color:red">Nothing In Your Cart</p>
     <a class="border border-secondary p-2" href="/Home/Index">Continue Shopping</a>
 </div>
+
+<div id="StockOutModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header StockOutHeader">
+
+            </div>
+            <div class="modal-body StockOutBody">
+
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
+    function validate() {
+        if ($(".stockout").length > 0) {
+            $(".StockOutHeader").empty();
+            $(".StockOutBody").empty();
+            $(".StockOutHeader").append(`<h5 class="modal-title">Stock Out</h5><button type="button"  class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`);
+            $(".StockOutBody").append(`<p style="color:red">Please delete all the stock out products from cart</p>`);
+           
+            $(".StockOutBody").append(`<button type = "button" class="ml-2 btn btn-secondary" data-dismiss="modal">Close </button >`);
+            return false;
+        } else {
+            return true;
+        }
+    }
     function deleteCart(item) {
         var index = item.getAttribute("data-cartindex-type");
         $.ajax({

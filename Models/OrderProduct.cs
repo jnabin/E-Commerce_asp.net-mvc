@@ -17,17 +17,18 @@ namespace E_Commerce.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public OrderProduct()
         {
-            this.Orders = new HashSet<Order>();
+            this.Profits = new HashSet<Profit>();
         }
     
         public int ProductOrderID { get; set; }
         public int OrderID { get; set; }
         public int ProductID { get; set; }
+        public int CustomerID { get; set; }
     
+        public virtual Customer Customer { get; set; }
+        public virtual Order Order { get; set; }
+        public virtual ProductHistory ProductHistory { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Order> Orders { get; set; }
-        public virtual OrderProduct OrderProduct1 { get; set; }
-        public virtual OrderProduct OrderProduct2 { get; set; }
-        public virtual Product Product { get; set; }
+        public virtual ICollection<Profit> Profits { get; set; }
     }
 }

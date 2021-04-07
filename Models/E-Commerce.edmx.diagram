@@ -4,34 +4,42 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="4adee17af8f84a4b8c7d4925a37cf3c4" Name="Diagram1" ZoomLevel="108">
-        <EntityTypeShape EntityType="Model.Admin" Width="1.5" PointX="9.75" PointY="10.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="Model.Customer" Width="1.5" PointX="7.5" PointY="1.25" IsExpanded="true" />
-        <EntityTypeShape EntityType="Model.FinalSubCategory" Width="1.5" PointX="5.25" PointY="9.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="Model.MainCategory" Width="1.5" PointX="0.75" PointY="4.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="Model.Manager" Width="1.5" PointX="11.75" PointY="0.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="Model.Order" Width="1.5" PointX="12" PointY="6.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="Model.OrderProduct" Width="1.5" PointX="9.75" PointY="7" IsExpanded="true" />
-        <EntityTypeShape EntityType="Model.Product" Width="1.5" PointX="7.5" PointY="6" IsExpanded="true" />
-        <EntityTypeShape EntityType="Model.ProductSize" Width="1.5" PointX="3" PointY="0.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="Model.Report" Width="1.5" PointX="9.75" PointY="1.25" IsExpanded="true" />
-        <EntityTypeShape EntityType="Model.Review" Width="1.5" PointX="9.75" PointY="4.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="Model.Sale" Width="1.5" PointX="5.25" PointY="6.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="Model.SubCatetory" Width="1.5" PointX="3" PointY="9.5" IsExpanded="true" />
-        <AssociationConnector Association="Model.FK_Order_Customer" ManuallyRouted="false" />
+      <Diagram DiagramId="26227bcf8abb4dc28c920c1afd812d50" Name="Diagram1" ZoomLevel="10">
+        <EntityTypeShape EntityType="Model.Admin" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.Customer" Width="1.5" PointX="10.5" PointY="7.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.FinalSubCategory" Width="1.5" PointX="5.25" PointY="17.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.MainCategory" Width="1.5" PointX="0.75" PointY="7.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.Manager" Width="1.5" PointX="2.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.Order" Width="1.5" PointX="10.5" PointY="21.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.OrderProduct" Width="1.5" PointX="12.75" PointY="10.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.ProductHistory" Width="1.5" PointX="7.5" PointY="11.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.Product" Width="1.5" PointX="10.5" PointY="12.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.ProductSize" Width="1.5" PointX="12.75" PointY="13.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.ProductSizeHistory" Width="1.5" PointX="9.75" PointY="18" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.Report" Width="1.5" PointX="13.25" PointY="7.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.Review" Width="1.5" PointX="12.75" PointY="16.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.Sale" Width="1.5" PointX="5.25" PointY="12.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.SubCatetory" Width="1.5" PointX="3" PointY="17.875" IsExpanded="true" />
+        <AssociationConnector Association="Model.FK_OrderProduct_Customer" ManuallyRouted="false" />
         <AssociationConnector Association="Model.FK_Report_Customer" ManuallyRouted="false" />
         <AssociationConnector Association="Model.FK_Review_Customer" ManuallyRouted="false" />
         <AssociationConnector Association="Model.FK_FinalSubCategory_SubCatetory" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_ProductHistory_FinalSubCategory" ManuallyRouted="false" />
         <AssociationConnector Association="Model.FK_Products_FinalSubCategory1" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_ProductHistory_MainCategory" ManuallyRouted="false" />
         <AssociationConnector Association="Model.FK_Products_MainCategory1" ManuallyRouted="false" />
         <AssociationConnector Association="Model.FK_SubCatetory_MainCategory" ManuallyRouted="false" />
-        <AssociationConnector Association="Model.FK_Order_OrderProduct" ManuallyRouted="false" />
         <AssociationConnector Association="Model.FK_OrderProduct_OrderProduct" ManuallyRouted="false" />
-        <AssociationConnector Association="Model.FK_OrderProduct_Products" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_OrderProduct_ProductHistory" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_ProductHistory_Sale" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_ProductHistory_SubCatetory" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_ProductSizeHistory_ProductHistory" ManuallyRouted="false" />
         <AssociationConnector Association="Model.FK_Products_Sale" ManuallyRouted="false" />
         <AssociationConnector Association="Model.FK_Products_SubCatetory" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_ProductSize_Products" ManuallyRouted="false" />
         <AssociationConnector Association="Model.FK_Review_Products" ManuallyRouted="false" />
-        <AssociationConnector Association="Model.FK_ProductSize_Products" />
+        <EntityTypeShape EntityType="Model.Profit" Width="1.5" PointX="15" PointY="11.125" />
+        <AssociationConnector Association="Model.FK_Profit_OrderProduct" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -23,5 +23,17 @@ namespace E_Commerce.Controllers
             categoryViewModel.finalSubCategories = finalSubCategoryRepository.GetAll();
             return PartialView("_NavBar", categoryViewModel);
         }
+        [ChildActionOnly]
+        public ActionResult AdminNavbar()
+        {
+            MainCategoryRepository mainCategoryRepository = new MainCategoryRepository();
+            SubCategoryRepository subCategoryRepository = new SubCategoryRepository();
+            FinalSubCategoryRepository finalSubCategoryRepository = new FinalSubCategoryRepository();
+            CategoryViewModel categoryViewModel = new CategoryViewModel();
+            categoryViewModel.mainCategories = mainCategoryRepository.GetAll();
+            categoryViewModel.subCatetories = subCategoryRepository.GetAll();
+            categoryViewModel.finalSubCategories = finalSubCategoryRepository.GetAll();
+            return PartialView("_AdminNavbar", categoryViewModel);
+        }
     }
 }

@@ -1,0 +1,303 @@
+﻿@model IEnumerable<E_Commerce.Models.Product>
+
+@{
+    ViewBag.Title = "WomanProductlist";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    Session["actionname"] = "WomanProductlist";
+    int cid = 0;
+    string cname = "";
+    if (Model?.Any() == true && Model.ElementAt(0).FinalSubCategory != null)
+    {
+        cid = (int)Model.ElementAt(0).FinalSubCategoryID;
+        cname = "f";
+    }
+    else if (Model?.Any() == true && Model.ElementAt(0).SubCatetory != null)
+    {
+        cid = (int)Model.ElementAt(0).SubCategoryID;
+        cname = "s";
+    }
+    else if (Model?.Any() == true && Model.ElementAt(0).MainCategory != null)
+    {
+        cid = (int)Model.ElementAt(0).MainCategory.Category_id;
+        cname = "m";
+    }
+}
+<hr />
+<div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-3">
+                <form id="frmDropDown">
+                    <div class="form-group row">
+                        <label for="sortby" class="col-sm-4 col-form-label">Sort by</label>
+                        <div class="col-sm-8">
+                            <select class="form-control" id="sortby" name="sorted">
+                                <option value="default|@cid|@cname">Position</option>
+                                <option value="atoz|@cid|@cname">name: a to z</option>
+                                <option value="ztoa|@cid|@cname">name: z to a</option>
+                                <option value="lowtohigh|@cid|@cname">price: low to high</option>
+                                <option value="hightolow|@cid|@cname">price: high to low</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+<hr />
+<div class="container mt-4">
+    <div class="row text-center maincontent">
+        @foreach (var item in Model)
+        {
+            string image = (item.ImageFile).Split('|')[0];
+            <div class="col-md-4 deleteParent">
+                <div class="bg-hoodies" style="background-image:url('/Content/image/@image');">
+                    <div class="uppercontent">
+                        <div class="content2" onmous>
+
+                            <a class="full-link" href="/Admin/ProductDetails/@item.Product_id">Shop Now</a>
+                        </div>
+                        <div class="hoverAbleInformation">
+
+                            <button onclick="EditProduct(this)" data-productID-type="@item.Product_id" class="p-3 btn border-right border-dark" data-toggle="modal" data-target="#exampleModal"><i class="c text-secondary far fa-edit"></i></button>
+                            <button onclick="DeleteProduct(this)" data-productID-type="@item.Product_id" class="btn p-3 border-right border-dark"><i class=" w text-secondary far fa-trash-alt"></i></button>
+
+                        </div>
+
+                    </div>
+                </div>
+                <div class="details">
+                    <div class="name">
+                        @item.Product_name
+                    </div>
+                    <div class="price font-weight-bold">
+                        ৳ @item.UnitPrice
+                    </div>
+                </div>
+            </div>
+
+        }
+
+    </div>
+</div>
+<form id="cartform" enctype="multipart/form-data" action="/Admin/UpdateProduct" method="post">
+    <div id="exampleModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+
+                </div>
+                <div class="modal-body">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+   
+    function increment() {
+        document.getElementById('demoInput').stepUp();
+    }
+    function decrement() {
+        document.getElementById('demoInput').stepDown();
+    }
+    function EditProduct(product) {
+        var id = product.getAttribute("data-productID-type");
+
+        $.ajax({
+            type: "POST",
+            datatype: "json",
+            url: '/Admin/GetDetails',
+            data: {
+                id: id
+            },
+
+            success: function (response) {
+                $(".modal-header").append(`<h5 class="modal-title">${response.Product_name}</h5><button type="button"  class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`);
+                $(".modal-body").append(`<div class="container"><div class="row border-buttom border-dark"><div class="col-4"><img style="max-width:100%;" src="/Content/image/${response.ImageFile.split('|')[0]}" alt="product-image"></div>` +
+                    `<div class="col-8"><p>${response.Product_name}</p><p>${response.Description}</p><p class="font-weight-bold">Price: ৳ ${response.UnitPrice}</p></div></div></hr>` +
+                    `<div class="row"><div class="col mt-2"> <div class="form-group" id="selectform"><label for="namefield">Product Name</label><input type="text"  name="Product_name" value="${response.Product_name}" id="namefield" class="form-control"/></div>` +
+                    `<div class="form-group" id="selectform2"><label for="descriptionfield">Product Description</label><input type="text" value="${response.Description}"  name="Description" id="descriptionfield" class="form-control"/></div>` +
+                    `<div class="form-group" id="selectform3"><label for="pricefield">Product Price</label><input type="text" value="${response.UnitPrice}"  name="UnitPrice" id="pricefield" class="form-control"/></div>` +
+                    `<div class="form-group" id="selectform4"><label for="Pimage">Product Image</label><input class="form-control-file" type="file" id="Pimage" name="files" accept="image/*" multiple/><small class="form-text text-muted">If no file selected, previous file will stays</small></div>` +
+
+                    `</div></div ></div>`);
+
+                $(".modal-body").append(`<div class="ml-3" id="errorms"></div>`);
+                $(".modal-body").append(`<button type="submit" class="ml-3 mt-2 btn btn-primary mb-2" id="update">Update</button>`);
+
+                $(".modal-body").append(`<input type = "hidden" id = "productid" name="Product_id" value=${response.Product_id}>`);
+
+                $(".modal-body").append(`<button type = "button" class="ml-2 btn btn-secondary" data-dismiss="modal">Close </button >`);
+
+                $("#pricefield").on("input", function (evt) {
+                    var self = $(this);
+                    self.val(self.val().replace(/[^0-9\.]/g, ''));
+                    if ((evt.which != 46 || self.val().indexOf('.') != -1) && (evt.which < 48 || evt.which > 57)) {
+                        evt.preventDefault();
+                    }
+                });
+
+                $("#namefield").change(function () {
+                    var value = $("#namefield").val();
+
+                    if (value.length == 0) {
+
+                        $("#selectform").append(`<p style="color:red" class="modalerror name">Product name is Required</p>`);
+                    } else {
+                        $(".name").remove();
+                    }
+                });
+                $("#descriptionfield").change(function () {
+                    var value = $("#descriptionfield").val();
+
+                    if (value.length == 0) {
+
+                        $("#selectform2").append(`<p style="color:red" class="modalerror desc">Description is Required</p>`);
+                    } else {
+                        $(".desc").remove();
+                    }
+                });
+                $("#pricefield").change(function () {
+                    var value = $("#pricefield").val();
+
+                    if (value.length == 0) {
+
+                        $("#selectform3").append(`<p style="color:red" class="modalerror unitprice">Price is Required</p>`);
+                    } else {
+                        if (Number(value) > 99999.99 || Number(value) <= 1) {
+                            $(".unitprice").remove();
+                            $("#selectform3").append(`<p style="color:red" class="modalerror unitprice">Price should be between 1 to 99999.99</p>`);
+                        } else {
+                            $(".unitprice").remove();
+                        }
+
+                    }
+                });
+
+                $("#update").click(function () {
+                    var i = true;
+                    if ($(".modalerror").length > 0) {
+                        return false;
+                    } if ($("#pricefield").val().length == 0) {
+                        $("#selectform3").append(`<p style="color:red" class="modalerror img">Price is Required</p>`);
+                        i = false;
+                    } if ($("#descriptionfield").val().length == 0) {
+                        $("#selectform2").append(`<p style="color:red" class="modalerror img">Description is Required</p>`);
+                        i = false;
+                    } if ($("#namefield").val().length == 0) {
+                        $("#selectform").append(`<p style="color:red" class="modalerror img">name is Required</p>`);
+                        i = false;
+                    }
+                    if (i == false) {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                });
+
+            }
+
+
+        });
+        if (!$("#exampleModal").hasClass("show")) {
+            $(".modal-header").html("");
+            $(".modal-body").html("");
+        }
+
+
+    }
+
+    $(document).ready(function () {
+        $('#sortby').change(function () {
+            var value = $("#sortby").val();
+
+            $.ajax({
+                type: "POST",
+                datatype: "json",
+                url: '/Admin/SortedProductList',
+                data: {
+                    value: value
+                },
+                success: function (response) {
+                    $(".maincontent").empty();
+                    $("#sortby").val(value);
+                    $.each(response, function (index, value) {
+                        var image = value["ImageFile"].split("|")[0];
+                        var id = value["Product_id"];
+                        var name = value["Product_name"];
+                        var price = value["UnitPrice"];
+
+                        $(".maincontent").append(`<div class="col-md-4 deleteParent">` +
+                            `<div class="bg-hoodies" style="background-image:url('/Content/image/${image}');">` +
+                            `<div class="uppercontent">` +
+                            `<div class="content2" onmous>` +
+
+                            `<a class="full-link" href="/Product/Details/${value["Product_id"]}">Shop Now</a>` +
+                            `</div>` +
+                            `<div class="hoverAbleInformation">` +
+                            `<button onclick="EditProduct(this)" data-productID-type="${id}" class="p-3 btn border-right border-dark" data-toggle="modal" data-target="#exampleModal"><i class="c text-secondary far fa-edit"></i></button>` +
+                            `<button onclick="DeleteProduct(this)" data-productID-type="${id}" class="btn p-3 border-right border-dark"><i class=" w text-secondary far fa-trash-alt"></i></button>` +
+
+                            `</div>` +
+
+                            `</div>` +
+                            `</div>` +
+                            `<div class="details">` +
+                            `<div class="name">` +
+                            `${name}` +
+                            `</div>` +
+                            `<div class= "price font-weight-bold">` +
+                            `৳ ${price}` +
+                            `</div >` +
+                            `</div > ` +
+                            `</div>`);
+                    });
+                }
+            });
+
+        });
+    });
+    function deleteAjax(id, callback) {
+
+        $.ajax({
+            type: "POST",
+            datatype: "json",
+            url: '/Admin/DeleteProduct',
+            data: {
+                id: id
+            },
+            success: function (response) {
+                if (response == "done") {
+                    callback(true);
+                }
+
+            }
+        });
+    }
+    function DeleteProduct(product) {
+        $(".deleteHeader").empty();
+        $(".deleteBody").empty();
+        product1 = product;
+        var id = product.getAttribute("data-productID-type");
+        var name = product.getAttribute("data-productName-type");
+        $(".deleteHeader").append(`<h5 class="modal-title">Delete ${name}</h5><button type="button"  class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`);
+        $(".deleteBody").append(`<p style="color:red"> Confirm Delete ${name}? This can't be undo.</p>`);
+        $(".deleteBody").append(`<button type="button" data-dismiss="modal" class="ml-3 mt-2 btn btn-primary mb-2" id="deletebtn">Delete</button>`);
+        $(".deleteBody").append(`<button type = "button" class="ml-2 btn btn-secondary" data-dismiss="modal">Close </button >`);
+        $("#deletebtn").click(function () {
+            deleteAjax(id, function (status) {
+                if (status) {
+                    $(product).parents(".deleteParent").remove();
+                }
+            });
+        });
+    }
+
+</script>
+

@@ -1,26 +1,72 @@
-﻿
+﻿@model IEnumerable<E_Commerce.Models.Product>
 @{
-    Layout = null;
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    var i = 1;
 }
+<hr />
+@if (Model?.Any() == true)
+{
+    <div class="container ml-2">
+        <div class="row">
+            <div class="col-5" id="removediv">
+                <h3>Products Without Size</h3>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
 
-<!DOCTYPE html>
-
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Admin Index</title>
-</head>
-<body>
-    <div> 
-        <ul style="list-style:none">
-            <li>
-                <a style="text-decoration:none" href="/Logout/index">Logout</a>
-            </li>
-            <li>
-                <a style="text-decoration:none" href="/Admin/AddProduct">Add Product</a>
-            </li>
-        </ul>     
-       
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <th scope="col">@i</th>
+                                <td><a href="#">@item.Product_name</a></td>
+                                <td>
+                                    <a class="pr-1 border-right border-dark" href="/Admin/AddSize/@item.Product_id">Add Size</a> <button class="btn" onclick="DeleteProduct(this)" data-productID-type="@item.Product_id">Delete</button>
+                                </td>
+                            </tr>
+                            i++;
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-7 changeclass">
+                
+            </div>
+        </div>
     </div>
-</body>
-</html>
+}
+else
+{
+   
+}
+    <script>
+        function DeleteProduct(item) {
+            var id = item.getAttribute("data-productID-type");
+            $.ajax({
+                type: "POST",
+                datatype: "json",
+                url: '/Admin/DeleteProductFromSizesNotAvailable',
+                data: {
+                    id: id
+                },
+                success: function (response) {
+                    if (response == "empty") {
+                        $(item).parents("tr").remove();
+                        $("#removediv").remove();
+                        $(".changeclass").removeClass("col-7");
+                        $(".changeclass").addClass("col-12");
+                       
+                    } else {
+                        $(item).parents("tr").remove();
+                    }
+
+                }
+            });
+        }
+    </script>
+

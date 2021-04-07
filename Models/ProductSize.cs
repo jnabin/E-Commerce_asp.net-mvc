@@ -15,9 +15,9 @@ namespace E_Commerce.Models
     public partial class ProductSize
     {
         public int ProductSizeID { get; set; }
+        public string SizeName { get; set; }
         public int ProductID { get; set; }
         public int Count { get; set; }
-        public string SizeName { get; set; }
     
         public virtual Product Product { get; set; }
     }
