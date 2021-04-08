@@ -63,6 +63,7 @@
                         <div class="hoverAbleInformation">
 
                             <button onclick="EditProduct(this)" data-productID-type="@item.Product_id" class="p-3 btn border-right border-dark" data-toggle="modal" data-target="#exampleModal"><i class="c text-secondary far fa-edit"></i></button>
+                            <button onclick="AddToSale(this)" data-productID-type="@item.Product_id" class="p-3 btn border-right border-dark" data-toggle="modal" data-target="#saleModal">sale</button>
                             <button onclick="DeleteProduct(this)" data-productID-type="@item.Product_id" data-productName-type="@item.Product_name" class="btn p-3 border-right border-dark" data-toggle="modal" data-target="#deleteModal"><i class=" w text-secondary far fa-trash-alt"></i></button>
 
                         </div>
@@ -98,6 +99,23 @@
     </div>
 </form>
 
+
+<form id="Saleform" action="/Sale/AddProductToSale" method="post">
+    <div id="saleModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+
+                </div>
+                <div class="modal-body">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+
 <div id="deleteModal" class="modal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -113,13 +131,40 @@
 
 <script>
     var product1;
-    
     function increment() {
         document.getElementById('demoInput').stepUp();
     }
     function decrement() {
         document.getElementById('demoInput').stepDown();
     }
+
+    function AddToSale(product) {
+        var id = product.getAttribute("data-productID-type");
+
+        $.ajax({
+            type: "POST",
+            datatype: "json",
+            url: '/Admin/GetDetails',
+            data: {
+                id: id
+            },
+            success: function (response) {
+                $(".modal-header").empty();
+                $(".modal-body").empty();
+                $(".modal-header").append(`<h5 class="modal-title">${response.Product_name}</h5><button type="button"  class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`);
+                $(".modal-body").append(`<div class="container"><div class="row border-buttom border-dark"><div class="col-4"><img style="max-width:100%;" src="/Content/image/${response.ImageFile.split('|')[0]}" alt="product-image"></div>` +
+                    `<div class="col-8"><p>${response.Product_name}</p><p>${response.Description}</p><p class="font-weight-bold">Price: ৳ ${response.UnitPrice}</p></div></div></hr>` +
+                    `<div class="row"><div class="col mt-2"> <div class="form-group" id="selectformsale"><label for="SalePercentage">Sale Percentage</label><input type="number" min = 1 max = 100 required name="Amount" id = "SalePercentage" class="SalePercentage form-control"/><p class="errsale"></p></div><input type="hidden" name="Product_id" value="${response.Product_id}"/>` +
+                    `</div></div ></div>`);
+                $(".modal-body").append(`<button type="submit" class="ml-3 mt-2 btn btn-primary mb-2" id="Sale">Add Sale</button>`);
+                $(".modal-body").append(`<button type = "button" class="ml-2 btn btn-secondary" data-dismiss="modal">Close </button >`);
+            }
+        });
+
+    }
+    $(".SalePercentage").change(function () {
+        alert(($(".SalePercentage").val()));
+    });
     function EditProduct(product) {
         var id = product.getAttribute("data-productID-type");
 
@@ -312,5 +357,5 @@
             });
         });
     }
-
+    
 </script>

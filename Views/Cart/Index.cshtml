@@ -5,7 +5,8 @@
     var c = Model;
     double total = 0;
     var errorcheckig = "";
-
+    int j = 1;
+    int i = 0;
 }
 
 <hr />
@@ -49,9 +50,7 @@
 
 <form id="hideonempty" onsubmit="return validate();" action="/Cart/Checkout" method="get">
     @foreach (var item in Model)
-    {
-        int i = 0;
-        int j = 1;
+    { 
         <div class="container text-center delete">
             <div class="row">
                 <div class="col-1">

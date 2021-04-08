@@ -159,6 +159,7 @@
     <EntitySetMapping Name="Reviews">
       <EntityTypeMapping TypeName="Model.Review">
         <MappingFragment StoreEntitySet="Review">
+          <ScalarProperty Name="Date" ColumnName="Date" />
           <ScalarProperty Name="ReviewID" ColumnName="ReviewID" />
           <ScalarProperty Name="Description" ColumnName="Description" />
           <ScalarProperty Name="ProductID" ColumnName="ProductID" />
@@ -173,7 +174,6 @@
           <ScalarProperty Name="SaleID" ColumnName="SaleID" />
           <ScalarProperty Name="Amount" ColumnName="Amount" />
           <ScalarProperty Name="StartDate" ColumnName="StartDate" />
-          <ScalarProperty Name="EndDate" ColumnName="EndDate" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
@@ -192,6 +192,15 @@
           <ScalarProperty Name="ProfitAmount" ColumnName="ProfitAmount" />
           <ScalarProperty Name="ProductOrderID" ColumnName="ProductOrderID" />
           <ScalarProperty Name="Profit_ID" ColumnName="Profit_ID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="SaleHistories">
+      <EntityTypeMapping TypeName="Model.SaleHistory">
+        <MappingFragment StoreEntitySet="SaleHistory">
+          <ScalarProperty Name="StartDate" ColumnName="StartDate" />
+          <ScalarProperty Name="Amount" ColumnName="Amount" />
+          <ScalarProperty Name="SaleID" ColumnName="SaleID" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>

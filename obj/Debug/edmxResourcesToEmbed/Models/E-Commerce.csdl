@@ -118,6 +118,7 @@
     <NavigationProperty Name="Sale" Relationship="Self.FK_ProductHistory_Sale" FromRole="ProductHistory" ToRole="Sale" />
     <NavigationProperty Name="SubCatetory" Relationship="Self.FK_ProductHistory_SubCatetory" FromRole="ProductHistory" ToRole="SubCatetory" />
     <NavigationProperty Name="ProductSizeHistories" Relationship="Self.FK_ProductSizeHistory_ProductHistory" FromRole="ProductHistory" ToRole="ProductSizeHistory" />
+    <NavigationProperty Name="SaleHistory" Relationship="Model.FK_ProductHistory_Sale1" FromRole="ProductHistory" ToRole="SaleHistory" />
   </EntityType>
   <EntityType Name="Product">
     <Key>
@@ -183,6 +184,7 @@
     <Property Name="ReviewTitle" Type="String" MaxLength="30" FixedLength="false" Unicode="false" Nullable="false" />
     <NavigationProperty Name="Customer" Relationship="Self.FK_Review_Customer" FromRole="Review" ToRole="Customer" />
     <NavigationProperty Name="Product" Relationship="Self.FK_Review_Products" FromRole="Review" ToRole="Products" />
+    <Property Name="Date" Type="DateTime" Precision="3" />
   </EntityType>
   <EntityType Name="Sale">
     <Key>
@@ -191,7 +193,6 @@
     <Property Name="SaleID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
     <Property Name="Amount" Type="String" MaxLength="10" FixedLength="false" Unicode="false" Nullable="false" />
     <Property Name="StartDate" Type="DateTime" Nullable="false" Precision="0" />
-    <Property Name="EndDate" Type="DateTime" Nullable="false" Precision="0" />
     <NavigationProperty Name="ProductHistories" Relationship="Self.FK_ProductHistory_Sale" FromRole="Sale" ToRole="ProductHistory" />
     <NavigationProperty Name="Products" Relationship="Self.FK_Products_Sale" FromRole="Sale" ToRole="Products" />
   </EntityType>
@@ -524,6 +525,11 @@
       <End Role="OrderProduct" EntitySet="OrderProducts" />
       <End Role="Profit" EntitySet="Profits" />
     </AssociationSet>
+    <EntitySet Name="SaleHistories" EntityType="Model.SaleHistory" />
+    <AssociationSet Name="FK_ProductHistory_Sale1" Association="Model.FK_ProductHistory_Sale1">
+      <End Role="SaleHistory" EntitySet="SaleHistories" />
+      <End Role="ProductHistory" EntitySet="ProductHistories" />
+    </AssociationSet>
   </EntityContainer>
   <EntityType Name="Profit">
     <Key>
@@ -543,6 +549,27 @@
       </Principal>
       <Dependent Role="Profit">
         <PropertyRef Name="ProductOrderID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityType Name="SaleHistory">
+    <Key>
+      <PropertyRef Name="SaleID" />
+    </Key>
+    <Property Name="SaleID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Amount" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+    <Property Name="StartDate" Type="DateTime" Nullable="false" Precision="0" />
+    <NavigationProperty Name="ProductHistories" Relationship="Model.FK_ProductHistory_Sale1" FromRole="SaleHistory" ToRole="ProductHistory" />
+  </EntityType>
+  <Association Name="FK_ProductHistory_Sale1">
+    <End Type="Model.SaleHistory" Role="SaleHistory" Multiplicity="0..1" />
+    <End Type="Model.ProductHistory" Role="ProductHistory" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="SaleHistory">
+        <PropertyRef Name="SaleID" />
+      </Principal>
+      <Dependent Role="ProductHistory">
+        <PropertyRef Name="SaleID" />
       </Dependent>
     </ReferentialConstraint>
   </Association>

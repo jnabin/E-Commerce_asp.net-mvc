@@ -5,7 +5,7 @@
     Session["existUser"] = Model.Username;
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<script src="~/Scripts/jquery-1.12.4.min.js"></script>
+
 <script src="~/Scripts/jquery.validate.min.js"></script>
 <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
 <hr />
@@ -14,18 +14,81 @@
         <div class="col-2 border-right border-dark">
             <h3>My Account</h3>
             <ul class="list-unstyled">
-                <li><a href="#">Customer Info</a></li>
-                <li><a class="text-secondary" href="#">Addresses</a></li>
-                <li><a class="text-secondary" href="#">Orders</a></li>
-                <li><a class="text-secondary" href="#">Change Password</a></li>
-                <li><a class="text-secondary" href="#">My Product Reviews</a></li>
+                <li><a onclick="showinfo(this)" class="removefocus" href="#">Customer Info</a></li>
+                <li><a class="text-secondary removefocus" href="#">Addresses</a></li>
+                <li><a onclick="showorders(this)" class="text-secondary removefocus" href="#">Orders</a></li>
+                <li><a onclick="showreport(this)" class="text-secondary removefocus" href="#">Orders Report</a></li>
+                <li><a class="text-secondary removefocus" onclick="showpasschanges(this)"  href="#">Change Password</a></li>
+                <li><a class="text-secondary removefocus" onclick="showreviews(this)" href="#">My Product Reviews</a></li>
             </ul>
         </div>
-        <div class="col-10">
+        <div class="col-10 changepass " style="display:none">
+            <div class="container text-center">
+                <h4 class="text-dark"> Change Password</h4>
+                <div class="row">
+                    <div class="col-3"></div>
+                    <div class="col-5 text-left">
+                        <form onsubmit="return validatepass();">
+                            <input type="hidden" value="@Model.password" name="originalpass" id="currpass" />
+                            <input type="hidden" value="@Model.CustomerID" name="CustomerID" id="cid" />
+                            <div class="form-group">
+                                <label for="CurrentPassword">Current Password</label>
+                                <input type="text" class="form-control" name="password" id="CurrentPassword" placeholder="current password">
+                                <p class="text-danger currenterr validaterr"></p>
+                            </div>
+                            <div class="form-group">
+                                <label for="NewPassword">New Password</label>
+                                <input type="text" class="form-control" name="newpassword" id="NewPassword" placeholder="New Password">
+                                <p class="text-danger newerr validaterr"></p>
+                            </div>
+                            <div class="form-group">
+                                <label for="ConfirmPassword">Confirm Password</label>
+                                <input type="text" class="form-control" name="confirmpassword" id="ConfirmPassword" placeholder="Confirm Password">
+                                <p class="text-danger conerr validaterr"></p>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-10 reviewdiv" style="display:none">
+            <div class="container text-center">
+                <h3 class="text-secondary">My Account - Product Reviews</h3>
+                <br />
+                @foreach (var item in Model.Reviews)
+                {
+                <div class="container text-left">
+                    <div class="container">
+                        <p class="text-secondary text-uppercase">@item.ReviewTitle</p>
+                    </div>
+
+                    <hr />
+                    <div class="container">
+                        <p class="text-secondary">@item.Description</p>
+                    </div>
+                    <div class="container">
+                        <p class="text-secondary">Product review for: <a class="text-secondary" href="/Product/Details/@item.ProductID"><u>@item.Product.Product_name</u></a> | Date: @item.Date</p>
+                    </div>
+                    <br />
+                </div>
+                
+                }
+            </div>
+            </div>
+        <div class="col-10 ordersdiv" style="display:none">
+            @{
+                Html.RenderAction("GetOrders", "Customer");
+            }
+        </div>
+        <div class="col-10 reportdiv" style="display:none">
+            @Html.Partial("CustomerOrderReports");
+        </div>
+        <div class="col-10 infodiv">
             <div class="container text-center">
                 <h3 class="text-secondary">My Account - Customer Info</h3>
                 <br />
-                <h3>YOUR PERSONAL DETAILS</h3>
+                <h4 class="text-dark">YOUR PERSONAL DETAILS</h4>
             </div>
             <hr />
             <div class="container">
@@ -144,11 +207,24 @@
 
     </div>
 </div>
+<br />
+
+<div id="PasswordModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header deleteHeader">
+
+            </div>
+            <div class="modal-body deleteBody">
+
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
 
     //declearing html elements
-
     const imgDiv = document.querySelector('.profile-pic-div');
     const img = document.querySelector('#photo');
     const file = document.querySelector('#file');
@@ -204,4 +280,127 @@
             }
         });
     });
+    function showreport(element) {
+        $(".removefocus").addClass("text-secondary");
+        $(element).removeClass("text-secondary");
+        $(".reportdiv").show();
+        $(".infodiv").hide();
+        $(".changepass").hide();
+        $(".ordersdiv").hide();
+        $(".reviewdiv").hide();
+    }
+    function showinfo(element) {
+        $(".removefocus").addClass("text-secondary");
+        $(element).removeClass("text-secondary");
+        $(".reportdiv").hide();
+        $(".ordersdiv").hide();
+        $(".reviewdiv").hide();
+        $(".changepass").hide();
+        $(".infodiv").show();
+    }
+    function showorders(element) {
+        $(".removefocus").addClass("text-secondary");
+        $(element).removeClass("text-secondary");
+        $(".reportdiv").hide();
+        $(".infodiv").hide();
+        $(".reviewdiv").hide();
+        $(".changepass").hide();
+        $(".ordersdiv").show();
+    }
+    function showreviews(element) {
+        $(".removefocus").addClass("text-secondary");
+        $(element).removeClass("text-secondary");
+        $(".reportdiv").hide();
+        $(".infodiv").hide();
+        $(".ordersdiv").hide();
+        $(".changepass").hide();
+        $(".reviewdiv").show();
+    }
+    //ddddddddddddddddddddddddddd
+
+     function showpasschanges(element) {
+        $(".removefocus").addClass("text-secondary");
+        $(element).removeClass("text-secondary");
+        $(".reportdiv").hide();
+        $(".infodiv").hide();
+        $(".ordersdiv").hide();
+        $(".reviewdiv").hide();
+        $(".changepass").show();
+    }
+    $("#CurrentPassword").change(function () {
+        if ($("#CurrentPassword").val() != $("#currpass").val()) {
+            $(".currenterr").empty();
+            $(".currenterr").append(`<small class="text-danger err">current password didn't match</small>`);
+        } else {
+            $(".currenterr").empty();
+        }
+    });   
+    $("#NewPassword").change(function () {
+        if ($("#NewPassword").val().length < 4) {
+            $(".newerr").empty();
+            $(".newerr").append(`<small class="text-danger err">Minimum length for password is 4</small>`);
+        }else {
+            $(".newerr").empty();
+        }
+    });   
+    $("#ConfirmPassword").change(function () {
+        if ($("#ConfirmPassword").val().length < 4) {
+            $(".conerr").empty();
+            $(".conerr").append(`<small class="text-danger err">Minimum length for password is 4</small>`);
+        } else if ($("#NewPassword").val() != $("#ConfirmPassword").val()) {
+            $(".conerr").empty();
+            $(".conerr").append(`<small class="text-danger err">password doesn't match</small>`);
+        } else if ($("#NewPassword").val() == $("#ConfirmPassword").val()) {
+            $(".conerr").empty();
+            $(".newerr").empty();
+        } else {
+            $(".conerr").empty();
+        }
+    });   
+
+
+    function validatepass() {
+        if ($("#CurrentPassword").val().length < 1) {
+            $(".currenterr").empty();
+            $(".currenterr").append(`<small class="text-danger err">current password didn't match</small>`);
+        }
+        if ($("#ConfirmPassword").val().length < 1) {
+           
+            $(".conerr").empty();
+            $(".conerr").append(`<small class="text-danger err">confirm password required</small>`);
+        }
+        if ($("#NewPassword").val().length < 1) {
+            $(".newerr").empty();
+            $(".newerr").append(`<small class="text-danger err">New password required</small>`);
+        }
+        if ($(".err").length > 0) {
+            return false;
+        } else {
+            var value = $('form').serialize();
+            $.ajax({
+                type: "post",
+                url: '@Url.Action("UpdatePassword", "Customer")',
+                data: value,
+                success: function (response) {
+                    if (response == "success") {
+                        var myModal = new bootstrap.Modal(document.getElementById('PasswordModal'));
+                        myModal.toggle();
+                        $(".modal-header").empty();
+                        $(".modal-body").empty();
+                        $(".modal-header").append(`<h5 class="modal-title">Success</h5><button type="button"  class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`);
+                        $(".modal-body").append(`<p class="text-success">Password Updated successfully</p>`);
+                        $(".modal-body").append(`<button type = "button" class="ml-2 btn btn-primary" data-dismiss="modal">Close </button >`);
+                        $("#currpass").val($("#ConfirmPassword").val());
+                        $("#NewPassword").val("");
+                        $("#ConfirmPassword").val("");
+                        $("#CurrentPassword").val("");
+                    }
+                }
+
+            });
+            return false;
+        }
+    }
+    
+   
 </script>

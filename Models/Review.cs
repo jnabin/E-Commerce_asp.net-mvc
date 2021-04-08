@@ -19,6 +19,7 @@ namespace E_Commerce.Models
         public int ProductID { get; set; }
         public int CustomerID { get; set; }
         public string ReviewTitle { get; set; }
+        public Nullable<System.DateTime> Date { get; set; }
     
         public virtual Customer Customer { get; set; }
         public virtual Product Product { get; set; }

@@ -4,7 +4,7 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="26227bcf8abb4dc28c920c1afd812d50" Name="Diagram1" ZoomLevel="10">
+      <Diagram DiagramId="26227bcf8abb4dc28c920c1afd812d50" Name="Diagram1" ZoomLevel="60">
         <EntityTypeShape EntityType="Model.Admin" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="Model.Customer" Width="1.5" PointX="10.5" PointY="7.5" IsExpanded="true" />
         <EntityTypeShape EntityType="Model.FinalSubCategory" Width="1.5" PointX="5.25" PointY="17.875" IsExpanded="true" />
@@ -40,6 +40,8 @@
         <AssociationConnector Association="Model.FK_Review_Products" ManuallyRouted="false" />
         <EntityTypeShape EntityType="Model.Profit" Width="1.5" PointX="15" PointY="11.125" />
         <AssociationConnector Association="Model.FK_Profit_OrderProduct" />
+        <EntityTypeShape EntityType="Model.SaleHistory" Width="1.5" PointX="0.75" PointY="4.875" />
+        <AssociationConnector Association="Model.FK_ProductHistory_Sale1" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

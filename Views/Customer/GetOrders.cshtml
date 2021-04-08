@@ -1,0 +1,95 @@
+﻿@model IEnumerable<E_Commerce.Models.OrderProduct>
+    @{ 
+        double total = 0;
+        int j = 1;
+    }
+
+<hr />
+<div class="container text-center mt-2">
+    <div class="row">
+        <div class="col">
+            <h3 class="text-secondary">Order History</h3>
+        </div>
+    </div>
+</div>
+<br>
+<div class="container text-center">
+    <div class="row">
+        <div class="col-1">
+            <p class="text-secondary">#</p>
+        </div>
+        <div class="col-1">
+            <p class="text-secondary">Date</p>
+        </div>
+        <div class="col-1">
+            <p class="text-secondary">PICTURE</p>
+        </div>
+        <div class="col-4">
+            <p class="text-secondary">PRODUCT(S)</p>
+        </div>
+        <div class="col-1">
+            <p class="text-secondary">PRICE(৳)</p>
+        </div>
+        <div class="col-2">
+            <p class="text-secondary">Payment</p>
+        </div>
+        <div class="col-1">
+            <p class="text-secondary">QUANTITY</p>
+        </div>
+        <div class="col-1">
+            <p class="text-secondary">TOTAL</p>
+        </div>
+    </div>
+</div>
+<hr />
+   
+    @foreach (var item in Model)
+    {
+        int i = 0;
+        
+        <div class="container text-center">
+            <div class="row">
+                <div class="col-1">
+                    <p class="text-secondary">@j</p>
+                </div>
+                <div class="col-1">
+                    <p class="text-secondary">@item.Order.date</p>
+                </div>
+                <div class="col-1">
+                    @{string image = (item.ProductHistory.ImageFile).Split('|')[0];}
+                    <img style="max-width:100%;" src="~/Content/image/@image" alt="product_image" />
+
+                </div>
+                <div class="col-4">
+                    <div class="container text-center">
+                        <p class="font-weight-bold">@item.ProductHistory.Product_name</p>
+                        @if (item.Order.Size != null)
+                        {
+                            <p>SIZE:&nbsp;@item.Order.Size</p>
+                        }
+
+                    </div>
+                </div>
+                <div class="col-1">
+                    @{ var uprice = (double)item.ProductHistory.UnitPrice;}
+                    <p>@uprice</p>
+                </div>
+                <div class="col-2">
+                    <p>@item.Order.PayMentMethod</p>
+                </div>
+                <div class="col-1">
+                    <p class="p-2 border border-secondary">@item.Order.Quantity</p>
+                </div>
+                @{
+                    var subtotal = (double)(item.Order.Quantity * item.ProductHistory.UnitPrice);
+                    total += subtotal;
+                }
+                <div class="col-1">
+                    <p>৳ @subtotal</p>
+                </div>
+            </div>
+        </div>
+        <hr />
+        i++;
+        j++;
+    }

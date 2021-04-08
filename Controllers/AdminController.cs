@@ -17,6 +17,7 @@ namespace E_Commerce.Controllers
         private SubCategoryRepository SubCategory = new SubCategoryRepository();
         private FinalSubCategoryRepository FinalSub = new FinalSubCategoryRepository();
         private MainCategoryRepository mainCategoryRepository = new MainCategoryRepository();
+        private ReviewRepository reviewrepo = new ReviewRepository();
         private ActionResult CheckValidity()
         {
             if (Session["admin"] == null)
@@ -494,6 +495,7 @@ namespace E_Commerce.Controllers
         [HttpPost]
         public ActionResult DeleteProduct(int id)
         {
+            reviewrepo.DeleteReview(id);
             productRepository.DeleteSize(id);
             productRepository.Delete(id);
             return Json("done");
@@ -738,6 +740,11 @@ namespace E_Commerce.Controllers
             }
 
             return Json(sortmodel);
+        }
+
+        public ActionResult ReviewList()
+        {
+            return View(reviewrepo.GetAll());
         }
     }
 

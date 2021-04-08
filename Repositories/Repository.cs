@@ -66,6 +66,11 @@ namespace E_Commerce.Repositories
 
         }
 
+        public List<Product> getSaleProduct()
+        {
+            return context.Set<Product>().Where(x => x.SaleID != null).ToList();
+        }
+
         public ProductHistory GetByProductNameCategory(string name, int id)
         {
             return context.Set<ProductHistory>().Where(x => x.CategoryID==id && x.Product_name == name).FirstOrDefault();
@@ -74,17 +79,17 @@ namespace E_Commerce.Repositories
 
         public List<Product> GetfromFinalCategory(int fid)
         {
-            return context.Set<Product>().Where(p=>p.FinalSubCategoryID==fid).ToList();
+            return context.Set<Product>().Where(p=>p.FinalSubCategoryID==fid && p.SaleID == null).ToList();
         }
 
         public List<Product> GetfromSubCategory(int sid)
         {
-            return context.Set<Product>().Where(p => p.SubCategoryID == sid).ToList();
+            return context.Set<Product>().Where(p => p.SubCategoryID == sid && p.SaleID == null).ToList();
         }
 
         public List<Product> GetfromMainCategory(int mid)
         {
-            return context.Set<Product>().Where(p => p.CategoryID == mid).ToList();
+            return context.Set<Product>().Where(p => p.CategoryID == mid && p.SaleID == null).ToList();
         }
 
         public int GetMainCategaoryID(int id)
@@ -132,6 +137,17 @@ namespace E_Commerce.Repositories
                 throw exc;
             }
             
+        }
+        
+        public void DeleteReview(int pid)
+        {
+            context.Set<Review>().RemoveRange(context.Set<Review>().Where(x => x.ProductID == pid));
+            context.SaveChanges();
+        }
+
+        public List<OrderProduct> getordersbycid( int id)
+        {
+           return context.Set<OrderProduct>().Where(x => x.CustomerID == id).ToList();
         }
 
         public void Update(TEntity entity)

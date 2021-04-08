@@ -63,6 +63,7 @@
                         <div class="hoverAbleInformation">
 
                             <button onclick="EditProduct(this)" data-productID-type="@item.Product_id" class="p-3 btn border-right border-dark" data-toggle="modal" data-target="#exampleModal"><i class="c text-secondary far fa-edit"></i></button>
+                            <button onclick="AddToSale(this)" data-productID-type="@item.Product_id" class="p-3 btn border-right border-dark" data-toggle="modal" data-target="#saleModal">sale</button>
                             <button onclick="DeleteProduct(this)" data-productID-type="@item.Product_id" class="btn p-3 border-right border-dark"><i class=" w text-secondary far fa-trash-alt"></i></button>
 
                         </div>
@@ -106,6 +107,34 @@
     function decrement() {
         document.getElementById('demoInput').stepDown();
     }
+
+    function AddToSale(product) {
+        var id = product.getAttribute("data-productID-type");
+
+        $.ajax({
+            type: "POST",
+            datatype: "json",
+            url: '/Admin/GetDetails',
+            data: {
+                id: id
+            },
+
+            success: function (response) {
+                $(".modal-header").empty();
+                $(".modal-body").empty();
+                $(".modal-header").append(`<h5 class="modal-title">${response.Product_name}</h5><button type="button"  class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`);
+                $(".modal-body").append(`<div class="container"><div class="row border-buttom border-dark"><div class="col-4"><img style="max-width:100%;" src="/Content/image/${response.ImageFile.split('|')[0]}" alt="product-image"></div>` +
+                    `<div class="col-8"><p>${response.Product_name}</p><p>${response.Description}</p><p class="font-weight-bold">Price: ৳ ${response.UnitPrice}</p></div></div></hr>` +
+                    `<div class="row"><div class="col mt-2"> <div class="form-group" id="selectformsale"><label for="SalePercentage">Sale Percentage</label><input type="number" name="Amount" id="SalePercentage" class="form-control"/></div>` +
+                    `</div></div ></div>`);
+                $(".modal-body").append(`<button type="submit" class="ml-3 mt-2 btn btn-primary mb-2" id="update">Update</button>`);
+                $(".modal-body").append(`<button type = "button" class="ml-2 btn btn-secondary" data-dismiss="modal">Close </button >`);
+            }
+        });
+
+    }
+
+
     function EditProduct(product) {
         var id = product.getAttribute("data-productID-type");
 

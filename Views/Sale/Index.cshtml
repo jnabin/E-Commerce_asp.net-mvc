@@ -1,9 +1,9 @@
 ﻿@model IEnumerable<E_Commerce.Models.Product>
 
 @{
-    ViewBag.Title = "LifestyleProductlist";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-    Session["actionname"] = "WomanProductlist";
+    ViewBag.Title = "ManProductlist";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    Session["actionname"] = "ManProductlist";
     int cid = 0;
     string cname = "";
     if (Model?.Any() == true && Model.ElementAt(0).FinalSubCategory != null)
@@ -63,8 +63,8 @@
                         <div class="hoverAbleInformation">
 
                             <button onclick="EditProduct(this)" data-productID-type="@item.Product_id" class="p-3 btn border-right border-dark" data-toggle="modal" data-target="#exampleModal"><i class="c text-secondary far fa-edit"></i></button>
-                            <button onclick="AddToSale(this)" data-productID-type="@item.Product_id" class="p-3 btn border-right border-dark" data-toggle="modal" data-target="#saleModal">sale</button>
-                            <button onclick="DeleteProduct(this)" data-productID-type="@item.Product_id" class="btn p-3 border-right border-dark"><i class=" w text-secondary far fa-trash-alt"></i></button>
+                            <button onclick="StopSale(this)" data-productID-type="@item.Product_id" data-productName-type="@item.Product_name" class="p-3 btn border-right border-dark" data-toggle="modal" data-target="#StopSale">StopSale</button>
+                            <button onclick="DeleteProduct(this)" data-productID-type="@item.Product_id" data-productName-type="@item.Product_name" class="btn p-3 border-right border-dark" data-toggle="modal" data-target="#deleteModal"><i class=" w text-secondary far fa-trash-alt"></i></button>
 
                         </div>
 
@@ -75,7 +75,12 @@
                         @item.Product_name
                     </div>
                     <div class="price font-weight-bold">
-                        ৳ @item.UnitPrice
+                        @{ 
+                            var p = (double)item.UnitPrice;
+                            var v = Convert.ToDouble(item.Sale.Amount)/100;
+                            var c =(p - (p * v));
+                        }
+                        <p><s>৳ @p</s> &nbsp; ৳ @c</p>
                     </div>
                 </div>
             </div>
@@ -86,7 +91,7 @@
 </div>
 <form id="cartform" enctype="multipart/form-data" action="/Admin/UpdateProduct" method="post">
     <div id="exampleModal" class="modal" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
 
@@ -99,10 +104,37 @@
     </div>
 </form>
 
-<script>
-    function additemcard() {
 
-    }
+
+<div id="StopSale" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header stopmodalh">
+
+            </div>
+            <div class="modal-body stopmodalb">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="deleteModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header deleteHeader">
+
+            </div>
+            <div class="modal-body deleteBody">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var product1;
     function increment() {
         document.getElementById('demoInput').stepUp();
     }
@@ -110,32 +142,33 @@
         document.getElementById('demoInput').stepDown();
     }
 
-    function AddToSale(product) {
+    function StopSale(product) {
         var id = product.getAttribute("data-productID-type");
 
         $.ajax({
             type: "POST",
             datatype: "json",
-            url: '/Admin/GetDetails',
+            url: '/Salle/StopSale',
             data: {
                 id: id
             },
-
             success: function (response) {
                 $(".modal-header").empty();
                 $(".modal-body").empty();
                 $(".modal-header").append(`<h5 class="modal-title">${response.Product_name}</h5><button type="button"  class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`);
                 $(".modal-body").append(`<div class="container"><div class="row border-buttom border-dark"><div class="col-4"><img style="max-width:100%;" src="/Content/image/${response.ImageFile.split('|')[0]}" alt="product-image"></div>` +
                     `<div class="col-8"><p>${response.Product_name}</p><p>${response.Description}</p><p class="font-weight-bold">Price: ৳ ${response.UnitPrice}</p></div></div></hr>` +
-                    `<div class="row"><div class="col mt-2"> <div class="form-group" id="selectformsale"><label for="SalePercentage">Sale Percentage</label><input type="number" name="Amount" id="SalePercentage" class="form-control"/></div>` +
+                    `<div class="row"><div class="col mt-2"> <div class="form-group" id="selectformsale"><label for="SalePercentage">Sale Percentage</label><input type="number" min = 1 max = 100 required name="Amount" id = "SalePercentage" class="SalePercentage form-control"/><p class="errsale"></p></div><input type="hidden" name="Product_id" value="${response.Product_id}"/>` +
                     `</div></div ></div>`);
-                $(".modal-body").append(`<button type="submit" class="ml-3 mt-2 btn btn-primary mb-2" id="update">Update</button>`);
+                $(".modal-body").append(`<button type="submit" class="ml-3 mt-2 btn btn-primary mb-2" id="Sale">Add Sale</button>`);
                 $(".modal-body").append(`<button type = "button" class="ml-2 btn btn-secondary" data-dismiss="modal">Close </button >`);
             }
         });
 
     }
-
+    $(".SalePercentage").change(function () {
+        alert(($(".SalePercentage").val()));
+    });
     function EditProduct(product) {
         var id = product.getAttribute("data-productID-type");
 
@@ -242,7 +275,6 @@
 
 
     }
-
     $(document).ready(function () {
         $('#sortby').change(function () {
             var value = $("#sortby").val();
@@ -250,7 +282,7 @@
             $.ajax({
                 type: "POST",
                 datatype: "json",
-                url: '/Admin/SortByLifestyleProductList',
+                url: '/Admin/SortedProductList',
                 data: {
                     value: value
                 },
@@ -271,8 +303,8 @@
                             `<a class="full-link" href="/Product/Details/${value["Product_id"]}">Shop Now</a>` +
                             `</div>` +
                             `<div class="hoverAbleInformation">` +
-                            `<button onclick="EditProduct(this)" data-productID-type="${id}" class="p-3 btn border-right border-dark" data-toggle="modal" data-target="#exampleModal"><i class="c text-secondary far fa-edit"></i></button>` +
-                            `<button onclick="DeleteProduct(this)" data-productID-type="${id}" class="btn p-3 border-right border-dark"><i class=" w text-secondary far fa-trash-alt"></i></button>` +
+                             `<button onclick="EditProduct(this)" data-productID-type="${id}" class="p-3 btn border-right border-dark" data-toggle="modal" data-target="#exampleModal"><i class="c text-secondary far fa-edit"></i></button>`+
+                            `<button onclick="DeleteProduct(this)" data-productID-type="${id}" data-productName-type="${name}" class="btn p-3 border-right border-dark" data-toggle="modal" data-target="#deleteModal"><i class=" w text-secondary far fa-trash-alt"></i></button>`+
                             `</div>` +
 
                             `</div>` +
@@ -291,7 +323,9 @@
             });
 
         });
+
     });
+
     function deleteAjax(id, callback) {
 
         $.ajax({
@@ -309,6 +343,27 @@
             }
         });
     }
+
+    function StopAjax(id, callback) {
+
+        $.ajax({
+            type: "POST",
+            datatype: "json",
+            url: '/Sale/StopSale',
+            data: {
+                id: id
+            },
+            success: function (response) {
+                
+                if (response == "success") {
+                    
+                    callback(true);
+                }
+
+            }
+        });
+    }
+
     function DeleteProduct(product) {
         $(".deleteHeader").empty();
         $(".deleteBody").empty();
@@ -321,6 +376,26 @@
         $(".deleteBody").append(`<button type = "button" class="ml-2 btn btn-secondary" data-dismiss="modal">Close </button >`);
         $("#deletebtn").click(function () {
             deleteAjax(id, function (status) {
+                if (status) {
+                    $(product).parents(".deleteParent").remove();
+                }
+            });
+        });
+    }
+
+
+    function StopSale(product) {
+        $(".stopmodalh").empty();
+        $(".stopmodalb").empty();
+        product1 = product;
+        var id = product.getAttribute("data-productID-type");
+        var name = product.getAttribute("data-productName-type");
+        $(".stopmodalh").append(`<h5 class="modal-title">Delete ${name}</h5><button type="button"  class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`);
+        $(".stopmodalb").append(`<p class="text-danger"> Confirm Stop Sale For ${name}?</p> <p class="text-danger">This can't be undo.</p>`);
+        $(".stopmodalb").append(`<button type="button" data-dismiss="modal" class="ml-3 mt-2 btn btn-primary mb-2" id="Stopbtn">Stop Sale</button>`);
+        $(".stopmodalb").append(`<button type = "button" class="ml-2 btn btn-secondary" data-dismiss="modal">Close </button >`);
+        $("#Stopbtn").click(function () {
+            StopAjax(id, function (status) {
                 if (status) {
                     $(product).parents(".deleteParent").remove();
                 }

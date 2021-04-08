@@ -1,0 +1,58 @@
+﻿@model IEnumerable<E_Commerce.Models.Review>
+
+@{
+    ViewBag.Title = "ReviewList";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h2>ReviewList</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Description)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ReviewTitle)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Date)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Customer.CustomerName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Product.Description)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Description)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.ReviewTitle)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Date)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Customer.CustomerName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Product.Description)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.ReviewID }) |
+            @Html.ActionLink("Details", "Details", new { id=item.ReviewID }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.ReviewID })
+        </td>
+    </tr>
+}
+
+</table>

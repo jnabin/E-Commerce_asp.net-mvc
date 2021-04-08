@@ -121,9 +121,10 @@
             }
             else
             {
-                
-                    var cid = (int)Session["LoginID"];
-                 
+
+                var cid = (int)Session["LoginID"];
+                var cname = (string)Session["UserName"];
+
                 <form class="mt-1" onsubmit="return submitreview()" id="ajaxsubmit">
                     <input type="hidden" name="ProductID" value="@Model.Product_id" />
                     <input type="hidden" name="CustomerID" value="@cid" />
@@ -139,6 +140,30 @@
                     </div>
                     <button type="submit" id="addattr" class="btn btn-primary">Submit</button>
                 </form>
+
+                <br />
+                <h4 class="text-dark text-uppercase">existing reviews</h4>
+                <div class="container">
+                    @foreach (var item in Model.Reviews)
+                    {
+                        if (item.CustomerID == cid)
+                        {
+                            <div class="container">
+                                <p class="text-secondary text-uppercase">@item.ReviewTitle</p>
+                            </div>
+
+                            <hr />
+                            <div class="container">
+                                <p class="text-secondary">@item.Description</p>
+                            </div>
+                            <div class="container">
+                                <p class="text-secondary">Form: @cname | Date: @item.Date</p>
+                            </div>
+                            <br />
+                        }
+                    }
+                </div>
+
             }
         </div>
         <div class="col-3"></div>

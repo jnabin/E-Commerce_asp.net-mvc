@@ -192,6 +192,8 @@
       <LastGenOutput>E-Commerce.cs</LastGenOutput>
     </Content>
     <None Include="Scripts\jquery-3.6.0.intellisense.js" />
+    <Content Include="Scripts\chart\exporting.js" />
+    <Content Include="Scripts\chart\highcharts.js" />
     <Content Include="Scripts\jquery-3.6.0.js" />
     <Content Include="Scripts\jquery-3.6.0.min.js" />
     <Content Include="Scripts\jquery-3.6.0.slim.js" />
@@ -220,6 +222,7 @@
     <Compile Include="Controllers\PaymentController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Controllers\RegistrationController.cs" />
+    <Compile Include="Controllers\SaleController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -289,11 +292,15 @@
     <Compile Include="Models\Sale.cs">
       <DependentUpon>E-Commerce.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\SaleHistory.cs">
+      <DependentUpon>E-Commerce.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\SubCatetory.cs">
       <DependentUpon>E-Commerce.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ViewModels\CartViewModel.cs" />
     <Compile Include="Models\ViewModels\CategoryViewModel.cs" />
+    <Compile Include="Models\ViewModels\ChangePasswordViewModel.cs" />
     <Compile Include="Models\ViewModels\CheckOutViewModel.cs" />
     <Compile Include="Models\ViewModels\LoginViewModel.cs" />
     <Compile Include="Models\ViewModels\ProductViewModel.cs" />
@@ -301,6 +308,9 @@
     <Compile Include="Models\ViewModels\SortViewModel.cs" />
     <Compile Include="PaypalConfiguration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReportContent\Ratio.cs" />
+    <Compile Include="Repositories\SaleHistoryRepository.cs" />
+    <Compile Include="Repositories\SaleRepository.cs" />
     <Compile Include="Repositories\AdminRepository.cs" />
     <Compile Include="Repositories\CustomerRepository.cs" />
     <Compile Include="Repositories\FinalSubCategoryRepository.cs" />
@@ -354,6 +364,10 @@
     <Content Include="Views\Registration\Index.cshtml" />
     <Content Include="Scripts\jquery-3.6.0.slim.min.map" />
     <Content Include="Scripts\jquery-3.6.0.min.map" />
+    <Content Include="Views\Customer\CustomerOrderReports.cshtml" />
+    <Content Include="Views\Customer\GetOrders.cshtml" />
+    <Content Include="Views\Admin\ReviewList.cshtml" />
+    <Content Include="Views\Sale\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

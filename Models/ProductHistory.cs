@@ -42,5 +42,6 @@ namespace E_Commerce.Models
         public virtual SubCatetory SubCatetory { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ProductSizeHistory> ProductSizeHistories { get; set; }
+        public virtual SaleHistory SaleHistory { get; set; }
     }
 }
