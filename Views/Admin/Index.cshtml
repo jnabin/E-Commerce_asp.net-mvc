@@ -1,5 +1,8 @@
 ﻿@model IEnumerable<E_Commerce.Models.Product>
+
 @{
+    /**/
+
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
     var i = 1;
 }
@@ -22,6 +25,7 @@
 
                         @foreach (var item in Model)
                         {
+
                             <tr>
                                 <th scope="col">@i</th>
                                 <td><a href="#">@item.Product_name</a></td>
@@ -30,11 +34,15 @@
                                 </td>
                             </tr>
                             i++;
+
                         }
                     </tbody>
                 </table>
             </div>
-            <div class="col-7 changeclass">
+            <div class="col-7">
+                @{
+                    Html.RenderAction("ProductCount", "Admin");
+                }
                 
             </div>
         </div>
@@ -42,31 +50,35 @@
 }
 else
 {
-   
-}
-    <script>
-        function DeleteProduct(item) {
-            var id = item.getAttribute("data-productID-type");
-            $.ajax({
-                type: "POST",
-                datatype: "json",
-                url: '/Admin/DeleteProductFromSizesNotAvailable',
-                data: {
-                    id: id
-                },
-                success: function (response) {
-                    if (response == "empty") {
-                        $(item).parents("tr").remove();
-                        $("#removediv").remove();
-                        $(".changeclass").removeClass("col-7");
-                        $(".changeclass").addClass("col-12");
-                       
-                    } else {
-                        $(item).parents("tr").remove();
-                    }
-
-                }
-            });
+    <div class="container">
+        @{
+            Html.RenderAction("ProductCount", "Admin");
         }
-    </script>
+    </div>
 
+}
+<script>
+    function DeleteProduct(item) {
+        var id = item.getAttribute("data-productID-type");
+        $.ajax({
+            type: "POST",
+            datatype: "json",
+            url: '/Admin/DeleteProductFromSizesNotAvailable',
+            data: {
+                id: id
+            },
+            success: function (response) {
+                if (response == "empty") {
+                    $(item).parents("tr").remove();
+                    $("#removediv").remove();
+                    $(".changeclass").removeClass("col-7");
+                    $(".changeclass").addClass("col-12");
+
+                } else {
+                    $(item).parents("tr").remove();
+                }
+
+            }
+        });
+    }
+</script>

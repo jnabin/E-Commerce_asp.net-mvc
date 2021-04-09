@@ -308,6 +308,9 @@
     <Compile Include="Models\ViewModels\SortViewModel.cs" />
     <Compile Include="PaypalConfiguration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReportContent\LifeStyleCategoryRatio .cs" />
+    <Compile Include="ReportContent\WomenCategoryRatio.cs" />
+    <Compile Include="ReportContent\MenCategoryRatio.cs" />
     <Compile Include="ReportContent\Ratio.cs" />
     <Compile Include="Repositories\SaleHistoryRepository.cs" />
     <Compile Include="Repositories\SaleRepository.cs" />
@@ -338,7 +341,6 @@
     <Content Include="Views\Home\womenCategories.cshtml" />
     <Content Include="Views\Home\lifestylesCategories.cshtml" />
     <Content Include="Views\Login\Index.cshtml" />
-    <Content Include="Views\Admin\Index.cshtml" />
     <Content Include="Views\Admin\AddProduct.cshtml" />
     <Content Include="Views\Shared\_LayoutAdmin.cshtml" />
     <Content Include="Views\Admin\AddSize.cshtml" />
@@ -368,6 +370,14 @@
     <Content Include="Views\Customer\GetOrders.cshtml" />
     <Content Include="Views\Admin\ReviewList.cshtml" />
     <Content Include="Views\Sale\Index.cshtml" />
+    <Content Include="Views\Admin\MenCategoryReport.cshtml" />
+    <Content Include="Views\Admin\WomenCategoryReport.cshtml" />
+    <Content Include="Views\Admin\LifeStyleCategoryReport.cshtml" />
+    <Content Include="Views\Admin\mencategoryReportdetails.cshtml" />
+    <Content Include="Views\Admin\womencategoryReportdetails.cshtml" />
+    <Content Include="Views\Admin\lifestylecategoryReportdetails.cshtml" />
+    <Content Include="Views\Admin\Index.cshtml" />
+    <Content Include="Views\Admin\ProductCount.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

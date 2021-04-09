@@ -1,0 +1,179 @@
+﻿@model IEnumerable<E_Commerce.Models.MainCategory>
+
+<div class="container text-center">
+    <table class="table table-bordered  table-hover">
+
+        <tr>
+            <td>
+                Men
+            </td>
+            <td>
+                <table class="table table-bordered  table-hover">
+                    @foreach (var item in Model)
+                    {
+                        foreach (var item2 in item.SubCatetories.Where(x => x.MainCategory.Category_name == "Men"))
+                        {
+                            <tr>
+                                <td>
+                                    @item2.SubCategory_name
+                                </td>
+                                <td>
+                                    <table class="table table-bordered  table-hover">
+                                        @foreach (var item3 in item2.FinalSubCategories)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @item3.FinalSubCate_name
+                                                </td>
+                                                <td>
+                                                    @item3.Products.Where(x => x.SaleID == null).Count()
+                                                </td>
+                                            </tr>
+                                        }
+                                    </table>
+
+                                </td>
+                                <td>
+                                    @item2.Products.Where(x => x.SaleID == null).Count()
+                                </td>
+                            </tr>
+                        }
+                    }
+                </table>
+            </td>
+            <td>
+                @Model.Where(x => x.Category_id == 1).FirstOrDefault().Products.Where(x => x.SaleID == null).Count()
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Women
+            </td>
+            <td>
+                <table class="table table-bordered  table-hover">
+                    @foreach (var item in Model)
+                    {
+                        foreach (var item2 in item.SubCatetories.Where(x => x.MainCategory.Category_name == "Women"))
+                        {
+                            <tr>
+                                <td>
+                                    @item2.SubCategory_name
+                                </td>
+                                <td>
+                                    <table class="table table-bordered  table-hover">
+                                        @foreach (var item3 in item2.FinalSubCategories)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @item3.FinalSubCate_name
+                                                </td>
+                                                <td>
+                                                    @item3.Products.Where(x => x.SaleID == null).Count()
+                                                </td>
+                                            </tr>
+                                        }
+                                    </table>
+
+                                </td>
+                                <td>
+                                    @item2.Products.Where(x => x.SaleID == null).Count()
+                                </td>
+                            </tr>
+                        }
+                    }
+                </table>
+            </td>
+            <td>
+                @Model.Where(x => x.Category_id == 2).FirstOrDefault().Products.Where(x => x.SaleID == null).Count()
+            </td>
+        </tr>
+        <tr>
+            <td>
+                LifeStyles
+            </td>
+            <td>
+                <table class="table table-bordered  table-hover">
+                    @foreach (var item in Model)
+                    {
+                        foreach (var item2 in item.SubCatetories.Where(x => x.MainCategory.Category_id == 3))
+                        {
+                            <tr>
+                                <td>
+                                    @item2.SubCategory_name
+                                </td>
+                                <td>
+                                    <table class="table table-bordered  table-hover">
+                                        @foreach (var item3 in item2.FinalSubCategories)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @item3.FinalSubCate_name
+                                                </td>
+                                                <td>
+                                                    @item3.Products.Where(x => x.SaleID == null).Count()
+                                                </td>
+                                            </tr>
+                                        }
+                                    </table>
+
+                                </td>
+                                <td>
+                                    @item2.Products.Where(x => x.SaleID == null).Count()
+                                </td>
+                            </tr>
+                        }
+                    }
+                </table>
+            </td>
+            <td>
+                @Model.Where(x => x.Category_id == 3).FirstOrDefault().Products.Where(x => x.SaleID == null).Count()
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Sale Products
+            </td>
+            <td>
+                <table class="table table-bordered  table-hover">
+                    @foreach (var item in Model)
+                    {
+                        foreach (var item2 in item.SubCatetories)
+                        {
+                            <tr>
+                                <td>
+                                    @item2.SubCategory_name
+                                </td>
+                                <td>
+                                    <table class="table table-bordered  table-hover">
+                                        @foreach (var item3 in item2.FinalSubCategories)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @item3.FinalSubCate_name
+                                                </td>
+                                                <td>
+                                                    @item3.Products.Where(x => x.SaleID != null).Count()
+                                                </td>
+                                            </tr>
+                                        }
+                                    </table>
+
+                                </td>
+                                <td>
+                                    @item2.Products.Where(x => x.SaleID != null).Count()
+                                </td>
+                            </tr>
+                        }
+                    }
+                </table>
+            </td>
+            <td>
+                @{ 
+                    var salecount = Model.Where(x => x.Category_id == 3).FirstOrDefault().Products.Where(x => x.SaleID != null).Count() + Model.Where(x => x.Category_id == 2).FirstOrDefault().Products.Where(x => x.SaleID != null).Count() + Model.Where(x => x.Category_id == 1).FirstOrDefault().Products.Where(x => x.SaleID != null).Count();
+                }
+                @salecount
+            </td>
+        </tr>
+
+    </table>
+</div>

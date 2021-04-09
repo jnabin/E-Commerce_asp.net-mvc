@@ -1,0 +1,130 @@
+﻿<script src="~/Scripts/chart/exporting.js"></script>
+<script src="~/Scripts/chart/highcharts.js"></script>
+
+
+<div class="jumbotron">
+    <div id="container" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto"></div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $.getJSON("/Admin/GetManCategoryReportData", function (data) {
+
+
+
+            Highcharts.chart('container', {
+                chart: {
+                    plotBackgroundColor: null,
+                    plotBorderWidth: null,
+                    plotShadow: false,
+                    type: 'pie'
+                },
+                title: {
+                    text: 'Count of Men Categries Product'
+                },
+                tooltip: {
+                    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                },
+                plotOptions: {
+                    pie: {
+                        allowPointSelect: true,
+                        cursor: 'pointer',
+                        dataLabels: {
+                            enabled: true,
+                            format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                            style: {
+                                color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                            }
+                        }
+                    }
+                },
+
+                series: [{
+                    name: 'Brands',
+                    colorByPoint: true,
+                    data: [{
+                        name: 'Bags',
+                        y: data.Bags
+                    },
+                    {
+                        name: 'Boots',
+                        y: data.Boots
+                    },
+                    {
+                        name: 'Caps_Hats',
+                        y: data.Caps_Hats
+                        },
+                        {
+                            name: 'Casual_Shirts',
+                            y: data.Casual_Shirts
+                        },
+                        {
+                            name: 'Chinos',
+                            y: data.Chinos
+                        },
+                         {
+                             name: 'Dress_Pants',
+                             y: data.Dress_Pants
+                        },
+                        {
+                            name: 'Dress_Shirts',
+                            y: data.Dress_Shirts
+                        }, {
+                            name: 'Hoodies',
+                            y: data.Hoodies
+                        }, {
+                            name: 'Jackets',
+                            y: data.Jackets
+                        }, {
+                            name: 'Jeans',
+                            y: data.Jeans
+                        }, {
+                            name: 'Joggers_Trousers',
+                            y: data.Joggers_Trousers
+                        }, {
+                            name: 'Loafers',
+                            y: data.Loafers
+                        }, {
+                            name: 'Mask',
+                            y: data.Mask
+                        }, {
+                            name: 'Polo',
+                            y: data.Polo
+                        }, {
+                            name: 'Sandals',
+                            y: data.Sandals
+                        }, {
+                            name: 'Shorts',
+                            y: data.Shorts
+                        }, {
+                            name: 'Sneakers',
+                            y: data.Sneakers
+                        }, {
+                            name: 'Suits_Blazers',
+                            y: data.Suits_Blazers
+                        }, {
+                            name: 'Umbrella_Mug',
+                            y: data.Umbrella_Mug
+                        }, {
+                            name: 'SweatShirts',
+                            y: data.SweatShirts
+                        }, {
+                            name: 'Sweater',
+                            y: data.Sweater
+                        }, {
+                            name: 'Wallet_Card',
+                            y: data.Wallet_Card
+                        },
+                    {
+                        name: 'Sunglass',
+                        y: data.Sunglass
+                    }]
+                }]
+            });
+        });
+    });
+
+
+</script>
+
+

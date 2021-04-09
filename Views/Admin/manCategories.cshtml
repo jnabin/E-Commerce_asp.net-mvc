@@ -92,26 +92,38 @@
             int i = 1;
             foreach (var item2 in cx)
             {
-                if (i > 2 || (item2.Products.Count == 0))
+                foreach (var item3 in item2.Products)
                 {
-                    break;
-                }
-                <div class="col-md-4">
-                    <div class="bg-hoodies" style="background-image:url('/Content/image/background.PNG');">
-                        <div class="uppercontent">
-                            <div class="content">
-                                <div class="content-name ">
-                                    <p class="text-light mb-1">@item2.FinalSubCate_name</p>
+                    if (item3.SaleID != null)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        if (i > 2 || (item2.Products.Count == 0))
+                        {
+                            break;
+                        }
+                        <div class="col-md-4">
+                            <div class="bg-hoodies" style="background-image:url('/Content/image/background.PNG');">
+                                <div class="uppercontent">
+                                    <div class="content">
+                                        <div class="content-name ">
+                                            <p class="text-light mb-1">@item2.FinalSubCate_name</p>
+                                        </div>
+                                        <div class="shop">
+                                            <p class="text-light">Shop Now</p>
+                                        </div>
+                                        <a class="full-link" href="/Admin/ManProductlist/@item2.FinalSubCate_id?categoryname=f">Shop Now</a>
+                                    </div>
                                 </div>
-                                <div class="shop">
-                                    <p class="text-light">Shop Now</p>
-                                </div>
-                                <a class="full-link" href="/Admin/ManProductlist/@item2.FinalSubCate_id?categoryname=f">Shop Now</a>
                             </div>
                         </div>
-                    </div>
-                </div>
-                i++;
+                        i++;
+                    }
+                }
+
+
             }
 
 

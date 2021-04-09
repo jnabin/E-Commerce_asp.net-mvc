@@ -1,0 +1,99 @@
+﻿<script src="~/Scripts/chart/exporting.js"></script>
+<script src="~/Scripts/chart/highcharts.js"></script>
+
+<div class="jumbotron">
+    <div id="container" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto"></div>
+</div>
+
+<script>
+
+    $(document).ready(function () {
+        $.getJSON("/Admin/GetWomenCategoryReportData", function (data) {
+
+            Highcharts.chart('container', {
+                chart: {
+                    plotBackgroundColor: null,
+                    plotBorderWidth: null,
+                    plotShadow: false,
+                    type: 'pie'
+                },
+                title: {
+                    text: 'Count of Men Categries Product'
+                },
+                tooltip: {
+                    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                },
+                plotOptions: {
+                    pie: {
+                        allowPointSelect: true,
+                        cursor: 'pointer',
+                        dataLabels: {
+                            enabled: true,
+                            format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                            style: {
+                                color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                            }
+                        }
+                    }
+                },
+
+                series: [{
+                    name: 'Brands',
+                    colorByPoint: true,
+                    data: [{
+                        name: 'Overcoat',
+                        y: data.Overcoat
+                    },
+                    {
+                        name: 'Hoodies',
+                        y: data.Hoodies
+                    },
+                    {
+                        name: 'Jackets',
+                        y: data.Jackets
+                        },
+                        {
+                            name: 'Sweatshirt',
+                            y: data.Sweatshirt
+                        },
+                        {
+                            name: 'Ponchos',
+                            y: data.Ponchos
+                        },
+                         {
+                             name: 'Kammez_Kurtis',
+                             y: data.Kammez_Kurtis
+                        },
+                        {
+                            name: 'Fashion_Tops_Shirts',
+                            y: data.Fashion_Tops_Shirts
+                        }, {
+                            name: 'Shrugs_Duster',
+                            y: data.Shrugs_Duster
+                        }, {
+                            name: 'Blazers',
+                            y: data.Blazers
+                        }, {
+                            name: 'Jeans',
+                            y: data.Jeans
+                        }, {
+                            name: 'Leggings',
+                            y: data.Leggings
+                        }, {
+                            name: 'Zarzain_Pants',
+                            y: data.Zarzain_Pants
+                        }, {
+                            name: 'Scarves',
+                            y: data.Scarves
+                        }, {
+                            name: 'Bags',
+                            y: data.Bags
+                        }]
+                }]
+            });
+        });
+    });
+</script>
+
+
+

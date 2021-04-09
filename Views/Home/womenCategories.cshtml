@@ -92,6 +92,13 @@
             int i = 1;
             foreach (var item2 in cx)
             {
+                foreach (var item3 in item2.Products)
+                {
+                    if (item3.SaleID != null)
+                    {
+                        break;
+                    }
+                }
                 if (i > 2 || (item2.Products.Count == 0))
                 {
                     break;

@@ -89,14 +89,29 @@
 
 
         </ul>
+
+
     </div>
-    <div><a class="navbar-brand right ml-2 text-dark font-italic" href="/Admin/index"><b>JNFASHION&reg</b></a></div>
+
+    <div><a class="navbar-brand right ml-2 text-dark font-italic" href="/Admin/index"><b>Home</b></a></div>
+    <div class="dropdown show">
+        <a class="btn btn-white text-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Report
+        </a>
+
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+            <a class="dropdown-item" href="/Admin/mencategoryReportdetails">MenCategory Report</a>
+            <a class="dropdown-item" href="/Admin/womencategoryReportdetails">WomenCategory Report</a>
+            <a class="dropdown-item" href="/Admin/lifestylecategoryReportdetails">LifestyleCategory Report</a>
+        </div>
+    </div>
     <div class="row">
         <div class="col pl-1">
             <a class="mr-3 text-secondary cart" href="/Admin/AddProduct">Add Product</a>
             <a class="text-secondary profile" href="/Logout/Index">Logout</a>
         </div>
     </div>
+
 
 </nav>
 
