@@ -2,6 +2,7 @@
 using E_Commerce.Models.ViewModels;
 using E_Commerce.ReportContent;
 using E_Commerce.Repositories;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,11 +11,12 @@ using System.Web.Mvc;
 
 namespace E_Commerce.Controllers
 {
-    public class CustomerController : Controller
+    public class CustomerController : CustomerBaseController
     {
         private CustomerRepository customerRepository = new CustomerRepository();
         private ReviewRepository reviewModel = new ReviewRepository();
         private ProductOrderRepository productorder = new ProductOrderRepository();
+        private TempOrderProductRepository tempproductorder = new TempOrderProductRepository();
         // GET: Customer
         public ActionResult Index()
         {
@@ -30,14 +32,15 @@ namespace E_Commerce.Controllers
         public ActionResult updateInfo(Customer customer)
         {
            
-                if (Session["existUser"].ToString() != customer.Username && customerRepository.GetByName(customer.Username))
-                {
-                    TempData["error"] = "Username already taken";
-                    return RedirectToAction("Index");
-                }
-                customer.usertype = "customer";
-                customerRepository.Update(customer);
+            if (Session["existUser"].ToString() != customer.Username && customerRepository.GetByName(customer.Username))
+            {
+                TempData["error"] = "Username already taken";
                 return RedirectToAction("Index");
+            }
+            
+            customer.usertype = "customer";
+            customerRepository.Update(customer);
+            return RedirectToAction("Index");
         }
 
 
@@ -70,11 +73,12 @@ namespace E_Commerce.Controllers
             customer.usertype = "customer";
             customerRepository.Update(customer);
             
-            return RedirectToAction("Index");
+            return Json(customer.ImageFile);
 
         }
         public ActionResult AddReview(Review review)
         {
+            review.Date = DateTime.Now;
             reviewModel.Insert(review);
             return Json("success");
         }
@@ -83,14 +87,13 @@ namespace E_Commerce.Controllers
             int MenCategory = (productorder.GetAll()).Where(x => x.CustomerID == (int)Session["LoginId"] && x.ProductHistory.MainCategory.Category_name == "Men").Count();
             int WomenCategory = (productorder.GetAll()).Where(x => x.CustomerID == (int)Session["LoginId"] && x.ProductHistory.MainCategory.Category_name == "Women").Count();
             int LifeStyleCategory = (productorder.GetAll()).Where(x => x.CustomerID == (int)Session["LoginId"] && x.ProductHistory.MainCategory.Category_name == "Life Style").Count();
-            int SaleCategory = (productorder.GetAll()).Where(x => x.CustomerID == (int)Session["LoginId"] && x.ProductHistory.MainCategory.Category_name == "Sale").Count();
+            
 
             Ratio obj = new Ratio();
             obj.MenCategory = MenCategory;
             obj.WomenCategory = WomenCategory;
             obj.LifeStyleCategory = LifeStyleCategory;
-            obj.SaleCategory = SaleCategory;
-
+          
             return Json(obj, JsonRequestBehavior.AllowGet);
         }
         [ChildActionOnly]
@@ -98,6 +101,12 @@ namespace E_Commerce.Controllers
         {
             return PartialView(productorder.getordersbycid((int)Session["LoginId"]));
         }
+
+        public ActionResult GetPendingOrders()
+        {
+            return PartialView(tempproductorder.gettempordersbycid((int)Session["LoginId"]));
+        }
+
         [HttpPost]
         public ActionResult UpdatePassword(ChangePasswordViewModel customer)
         {
@@ -108,6 +117,25 @@ namespace E_Commerce.Controllers
                 customerRepository.Update(realcustomer);
             }
             return Json("success");
+        }
+        [HttpPost]
+        public ActionResult SaleVsRegularOrderReport()
+        {
+            
+            var chartData = new object[3];
+            chartData[0] = new object[]{
+                    "Order Product Type",
+                    "Count Amount"
+                };
+            
+            int saleProductOrderCount = productorder.GetAll().Where(x => x.ProductHistory.SaleHistory != null && x.CustomerID == (int)Session["LoginID"]).Count();
+            int RegularProductOrderCount = productorder.GetAll().Where(x => x.ProductHistory.SaleHistory == null && x.CustomerID == (int)Session["LoginID"]).Count();
+            chartData[1] = new object[] { "Sale Product Order", saleProductOrderCount };
+            chartData[2] = new object[] { "Regular Product Order", RegularProductOrderCount };
+            
+           
+           
+            return Json(chartData);
         }
     }
 }

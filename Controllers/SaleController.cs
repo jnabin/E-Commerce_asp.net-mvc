@@ -1,4 +1,5 @@
 ﻿using E_Commerce.Models;
+using E_Commerce.Models.ViewModels;
 using E_Commerce.Repositories;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,7 @@ namespace E_Commerce.Controllers
         private ProductHistoryRepository producthis = new ProductHistoryRepository();
         private SaleRepository salerepo = new SaleRepository();
         private SaleHistoryRepository saleHistoryRepo = new SaleHistoryRepository();
+        private ProductRepository productRepository = new ProductRepository();
         // GET: Sale
         public ActionResult Index()
         {
@@ -49,6 +51,9 @@ namespace E_Commerce.Controllers
             return Json("success");
         }
 
-
+        public ActionResult ProductSale()
+        {
+            return View(product.GetAll().Where(x => x.Sale != null));
+        }
     }
 }

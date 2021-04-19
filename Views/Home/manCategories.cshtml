@@ -85,26 +85,19 @@
 
 <div class="container mt-4">
     <div class="row text-center">
+
         @foreach (var item in subcate)
         {
 
-            var cx = item.FinalSubCategories.OrderByDescending(dt => dt.Products.Count);
-
+            var cx = item.FinalSubCategories.OrderByDescending(dt => dt.Products.Count(z => z.Sale == null));
             int i = 1;
             foreach (var item2 in cx)
             {
-                foreach(var item3 in item2.Products)
-                {
-                    if(item3.SaleID != null)
-                    {
-                        break;
-                    }
-                }
-                if (i > 2 || (item2.Products.Count==0))
+
+                if (i > 2 || (item2.Products.Count(d => d.Sale == null) == 0))
                 {
                     break;
                 }
-
                 <div class="col-md-4">
                     <div class="bg-hoodies" style="background-image:url('/Content/image/background.PNG');">
                         <div class="uppercontent">
@@ -121,10 +114,8 @@
                     </div>
                 </div>
                 i++;
+
             }
-            
-
-
 
         }
 

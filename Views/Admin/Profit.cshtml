@@ -1,0 +1,93 @@
+﻿@model IEnumerable<E_Commerce.Models.Profit>
+@{
+    int j = 1;
+    var data1 = Model.Where(x => x.OrderProduct.ProductHistory.MainCategory.Category_name == "Men");
+    var data2 = Model.Where(x => x.OrderProduct.ProductHistory.MainCategory.Category_name == "Women");
+    var data3 = Model.Where(x => x.OrderProduct.ProductHistory.MainCategory.Category_name == "Life Style");
+
+    DateTime EndDate = DateTime.Today;
+    DateTime StartDate = DateTime.Today.AddDays(-15);
+    int DayInterval = 1;
+
+    List<DateTime> dateList = new List<DateTime>();
+    while (StartDate.AddDays(DayInterval) <= EndDate)
+    {
+        StartDate = StartDate.AddDays(DayInterval);
+        dateList.Add(StartDate);
+    }
+    double netotal = 0;
+
+}
+
+<table class="table table-striped" id="tblRevenue">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Date</th>
+            <th scope="col">MenCategory Profit</th>
+            <th scope="col">WomenCategory Profit</th>
+            <th scope="col">LifeStyleCategory Profit</th>
+            <th scope="col">Total Profit</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in dateList)
+        {
+        <tr>
+            <th scope="row">@j</th>
+            <td>@item.ToString().Split(' ')[0]</td>
+            @{
+                double menamount = 0;
+                double womenamount = 0;
+                double lifestyleamount = 0;
+                double total = 0;
+            }
+
+            @foreach (var item2 in data1.Where(x => x.OrderProduct.Order.date == item))
+            {
+                menamount += (double)item2.ProfitAmount;
+
+
+            }
+            @foreach (var item2 in data2.Where(x => x.OrderProduct.Order.date == item))
+            {
+                womenamount += (double)item2.ProfitAmount;
+
+
+            }
+            @foreach (var item2 in data3.Where(x => x.OrderProduct.Order.date == item))
+            {
+                lifestyleamount += (double)item2.ProfitAmount;
+
+
+            }
+            @{ 
+                total += menamount;
+                total += womenamount;
+                total += lifestyleamount;
+            }
+            
+            <td>@menamount</td>
+            <td>@womenamount</td>
+            <td>@lifestyleamount</td>
+            <td>@total</td>
+            @{
+                netotal += total;
+            }
+
+        </tr>
+            j++;
+        }
+
+        <tr>
+            <th scope="row">Net Total Profit</th>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>@netotal</td>
+
+        </tr>
+
+    </tbody>
+</table>

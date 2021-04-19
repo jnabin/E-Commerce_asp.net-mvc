@@ -22,31 +22,7 @@
         cname = "m";
     }
 }
-<hr />
-<div>
 
-    <div class="container">
-        <div class="row">
-            <div class="col-3">
-                <form id="frmDropDown">
-                    <div class="form-group row">
-                        <label for="sortby" class="col-sm-4 col-form-label">Sort by</label>
-                        <div class="col-sm-8">
-                            <select class="form-control" id="sortby" name="sorted">
-                                <option value="default|@cid|@cname">Position</option>
-                                <option value="atoz|@cid|@cname">name: a to z</option>
-                                <option value="ztoa|@cid|@cname">name: z to a</option>
-                                <option value="lowtohigh|@cid|@cname">price: low to high</option>
-                                <option value="hightolow|@cid|@cname">price: high to low</option>
-                            </select>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-</div>
 <hr />
 <div class="container mt-4">
     <div class="row text-center maincontent">
@@ -282,11 +258,12 @@
             $.ajax({
                 type: "POST",
                 datatype: "json",
-                url: '/Admin/SortedProductList',
+                url: '/Sale/SortedProductList',
                 data: {
                     value: value
                 },
                 success: function (response) {
+                    alert(response);
                     $(".maincontent").empty();
                     $("#sortby").val(value);
                     $.each(response, function (index, value) {

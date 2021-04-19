@@ -9,12 +9,15 @@ using System.Web.Mvc;
 
 namespace E_Commerce.Controllers
 {
-    public class OrderController : Controller
+    public class OrderController : CustomerBaseController
     {
+        private ProductRepository productrepo = new ProductRepository();
         private ProductSizeRepository productsizeModel = new ProductSizeRepository();
         private ProfitRepository profitrepo = new ProfitRepository();
         private OrderRepository OrderModel = new OrderRepository();
         private ProductOrderRepository OrderProductModel = new ProductOrderRepository();
+        private TempOrderRepository temporderrepo = new TempOrderRepository();
+        private TempOrderProductRepository temporderproductrepo = new TempOrderProductRepository();
         private ProductHistoryRepository productHistory = new ProductHistoryRepository();
         // GET: Order
         public ActionResult Index()
@@ -32,34 +35,72 @@ namespace E_Commerce.Controllers
             var date = DateTime.Now;
             foreach (var item in cartlist)
             {
-                ProductSize psize = new ProductSize();
-                psize = productsizeModel.Get(item.size.ProductSizeID);
-                psize.Count = (psize.Count - item.count);
-                if (psize.Count == 0)
+                if(item.product.SizeCategory == "other")
                 {
-                    productsizeModel.Delete(psize.ProductSizeID);
+                    Product p1 = new Product();
+                    p1 = productrepo.Get(item.product.Product_id);
+                    p1.OnHand -= item.count;
+                    productrepo.Update(p1);
                 }
-                else {
-                    productsizeModel.Update(psize);
+                else
+                {
+                    ProductSize psize = new ProductSize();
+                    psize = productsizeModel.Get(item.size.ProductSizeID);
+                    psize.Count = (psize.Count - item.count);
+                    if (psize.Count == 0)
+                    {
+                        productsizeModel.Delete(psize.ProductSizeID);
+                    }
+                    else
+                    {
+                        productsizeModel.Update(psize);
+                    }
                 }
-
-                Order order = new Order();
+             
+                TempOrder order = new TempOrder();
                 order.date = date;
                 order.Quantity = item.count;
-                order.totalAmount = (item.count * item.product.UnitPrice);
-                order.Size = item.size.SizeName;
+                if(item.product.Sale != null)
+                {
+                    var p = (double)item.product.UnitPrice;
+                    var v = Convert.ToDouble(item.product.Sale.Amount) / 100;
+                    var c1 = (p - (p * v));
+                    order.totalAmount = (decimal)(item.count * c1);
+                }
+                else
+                {
+                    order.totalAmount = (item.count * item.product.UnitPrice);
+                }
+                if(item.product.SizeCategory != "other")
+                {
+                    order.Size = item.size.SizeName;
+                }
+               
                 order.PayMentMethod = (string)Session["paymentmethod"];
-                OrderModel.Insert(order);
-                OrderProduct orderproduct = new OrderProduct();
+                temporderrepo.Insert(order);
+
+                TempOrderProduct orderproduct = new TempOrderProduct();
                 orderproduct.CustomerID = (int)Session["LoginID"];
                 orderproduct.OrderID = order.OrderID;
                 orderproduct.ProductID = productHistory.GetByProductNameCategory(item.product.Product_name, item.product.CategoryID).Product_id;
-                OrderProductModel.Insert(orderproduct);
+                temporderproductrepo.Insert(orderproduct);
 
-                Profit profit = new Profit();
+               /* Profit profit = new Profit();
                 profit.ProductOrderID = orderproduct.ProductOrderID;
-                profit.ProfitAmount = (item.product.UnitPrice - item.product.Cost) * item.count;
-                profitrepo.Insert(profit);
+                if (item.product.Sale != null)
+                {
+                    var p = (double)item.product.UnitPrice;
+                    var v = Convert.ToDouble(item.product.Sale.Amount) / 100;
+                    var c1 = (p - (p * v));
+                    profit.ProfitAmount = ((decimal)c1 - item.product.Cost) * item.count;
+                }
+                else
+                {
+                    profit.ProfitAmount = (item.product.UnitPrice - item.product.Cost) * item.count;
+                }
+                
+               
+                profitrepo.Insert(profit);*/
             }
             Session["cart"] = null;
            

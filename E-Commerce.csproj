@@ -53,6 +53,15 @@
       <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.3.6.0\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.ReportViewer.Common, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ReportViewer.Common.10.0.40219.1\lib\Microsoft.ReportViewer.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.DataVisualization, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ReportViewer.Common.10.0.40219.1\lib\Microsoft.ReportViewer.DataVisualization.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.ProcessingObjectModel, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ReportViewer.Common.10.0.40219.1\lib\Microsoft.ReportViewer.ProcessingObjectModel.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -178,6 +187,7 @@
       <Generator>EntityModelCodeGenerator</Generator>
       <LastGenOutput>E-Commerce.Designer.cs</LastGenOutput>
     </EntityDeploy>
+    <Content Include="LICENSE.txt" />
     <Content Include="Models\E-Commerce.edmx.diagram">
       <DependentUpon>E-Commerce.edmx</DependentUpon>
     </Content>
@@ -211,13 +221,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\AdminBaseController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
+    <Compile Include="Controllers\AdminProductController.cs" />
     <Compile Include="Controllers\CartController.cs" />
     <Compile Include="Controllers\CategoryController.cs" />
+    <Compile Include="Controllers\CustomerBaseController.cs" />
     <Compile Include="Controllers\CustomerController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\LogoutController.cs" />
+    <Compile Include="Controllers\ManagerBaseController.cs" />
+    <Compile Include="Controllers\ManagerController.cs" />
     <Compile Include="Controllers\OrderController.cs" />
     <Compile Include="Controllers\PaymentController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
@@ -229,6 +244,8 @@
     <Compile Include="Models\Admin.cs">
       <DependentUpon>E-Commerce.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Admin2.cs" />
+    <Compile Include="Models\AdminMetaData.cs" />
     <Compile Include="Models\Customer.cs">
       <DependentUpon>E-Commerce.tt</DependentUpon>
     </Compile>
@@ -258,6 +275,8 @@
     <Compile Include="Models\Manager.cs">
       <DependentUpon>E-Commerce.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Manager2.cs" />
+    <Compile Include="Models\ManagerMetaData.cs" />
     <Compile Include="Models\Order.cs">
       <DependentUpon>E-Commerce.tt</DependentUpon>
     </Compile>
@@ -298,12 +317,19 @@
     <Compile Include="Models\SubCatetory.cs">
       <DependentUpon>E-Commerce.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\TempOrder.cs">
+      <DependentUpon>E-Commerce.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\TempOrderProduct.cs">
+      <DependentUpon>E-Commerce.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\ViewModels\CartViewModel.cs" />
     <Compile Include="Models\ViewModels\CategoryViewModel.cs" />
     <Compile Include="Models\ViewModels\ChangePasswordViewModel.cs" />
     <Compile Include="Models\ViewModels\CheckOutViewModel.cs" />
     <Compile Include="Models\ViewModels\LoginViewModel.cs" />
     <Compile Include="Models\ViewModels\ProductViewModel.cs" />
+    <Compile Include="Models\ViewModels\ReportViewModel.cs" />
     <Compile Include="Models\ViewModels\SizeViewModel.cs" />
     <Compile Include="Models\ViewModels\SortViewModel.cs" />
     <Compile Include="PaypalConfiguration.cs" />
@@ -312,6 +338,7 @@
     <Compile Include="ReportContent\WomenCategoryRatio.cs" />
     <Compile Include="ReportContent\MenCategoryRatio.cs" />
     <Compile Include="ReportContent\Ratio.cs" />
+    <Compile Include="Repositories\ManagerRepository.cs" />
     <Compile Include="Repositories\SaleHistoryRepository.cs" />
     <Compile Include="Repositories\SaleRepository.cs" />
     <Compile Include="Repositories\AdminRepository.cs" />
@@ -329,6 +356,8 @@
     <Compile Include="Repositories\Repository.cs" />
     <Compile Include="Repositories\ReviewRepository.cs" />
     <Compile Include="Repositories\SubCategoryRepository.cs" />
+    <Compile Include="Repositories\TempOrderProductRepository.cs" />
+    <Compile Include="Repositories\TempOrderRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\web.config" />
@@ -378,6 +407,20 @@
     <Content Include="Views\Admin\lifestylecategoryReportdetails.cshtml" />
     <Content Include="Views\Admin\Index.cshtml" />
     <Content Include="Views\Admin\ProductCount.cshtml" />
+    <Content Include="Views\Admin\CustomerDetails.cshtml" />
+    <Content Include="Views\AdminProduct\DetailsFromHistory.cshtml" />
+    <Content Include="Views\AdminProduct\ReviewListbyProduct.cshtml" />
+    <Content Include="Views\AdminProduct\GetTotalOrder.cshtml" />
+    <Content Include="Views\AdminProduct\OrderListbyProduct.cshtml" />
+    <Content Include="Views\Sale\ProductSale.cshtml" />
+    <Content Include="Views\Admin\Profit.cshtml" />
+    <Content Include="Views\Admin\AdminProfile.cshtml" />
+    <Content Include="Views\Admin\AddManager.cshtml" />
+    <Content Include="Views\Manager\Index.cshtml" />
+    <Content Include="Views\Customer\GetPendingOrders.cshtml" />
+    <Content Include="Views\Manager\CustomerDetails.cshtml" />
+    <Content Include="Views\Manager\DetailsFromHistory.cshtml" />
+    <Content Include="Views\Admin\OrderHistory.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -387,7 +430,10 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\AdminBase\" />
+    <Folder Include="Views\CustomerBase\" />
     <Folder Include="Views\Logout\" />
+    <Folder Include="Views\ManagerBase\" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />

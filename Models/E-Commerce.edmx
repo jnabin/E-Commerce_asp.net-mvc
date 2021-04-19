@@ -103,6 +103,7 @@
           <Property Name="SubCategoryID" Type="int" />
           <Property Name="SizeCategory" Type="varchar" MaxLength="15" Nullable="false" />
           <Property Name="AddedDate" Type="datetime" />
+          <Property Name="OnHand" Type="int" />
         </EntityType>
         <EntityType Name="Products">
           <Key>
@@ -190,6 +191,26 @@
           <Property Name="SubCategory_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="SubCategory_name" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="MCategory_id" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="TempOrder">
+          <Key>
+            <PropertyRef Name="OrderID" />
+          </Key>
+          <Property Name="OrderID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="date" Type="date" Nullable="false" />
+          <Property Name="totalAmount" Type="money" Nullable="false" />
+          <Property Name="Size" Type="varchar" MaxLength="20" />
+          <Property Name="Quantity" Type="int" Nullable="false" />
+          <Property Name="PayMentMethod" Type="varchar" MaxLength="25" />
+        </EntityType>
+        <EntityType Name="TempOrderProduct">
+          <Key>
+            <PropertyRef Name="ProductOrderID" />
+          </Key>
+          <Property Name="ProductOrderID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="OrderID" Type="int" Nullable="false" />
+          <Property Name="ProductID" Type="int" Nullable="false" />
+          <Property Name="CustomerID" Type="int" Nullable="false" />
         </EntityType>
         <Association Name="FK_FinalSubCategory_SubCatetory">
           <End Role="SubCatetory" Type="Self.SubCatetory" Multiplicity="1">
@@ -427,6 +448,42 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_TempOrderProduct_Customer">
+          <End Role="Customer" Type="Self.Customer" Multiplicity="1" />
+          <End Role="TempOrderProduct" Type="Self.TempOrderProduct" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Customer">
+              <PropertyRef Name="CustomerID" />
+            </Principal>
+            <Dependent Role="TempOrderProduct">
+              <PropertyRef Name="CustomerID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TempOrderProduct_ProductHistory">
+          <End Role="ProductHistory" Type="Self.ProductHistory" Multiplicity="1" />
+          <End Role="TempOrderProduct" Type="Self.TempOrderProduct" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ProductHistory">
+              <PropertyRef Name="Product_id" />
+            </Principal>
+            <Dependent Role="TempOrderProduct">
+              <PropertyRef Name="ProductID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TempOrderProduct_TempOrder">
+          <End Role="TempOrder" Type="Self.TempOrder" Multiplicity="1" />
+          <End Role="TempOrderProduct" Type="Self.TempOrderProduct" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TempOrder">
+              <PropertyRef Name="OrderID" />
+            </Principal>
+            <Dependent Role="TempOrderProduct">
+              <PropertyRef Name="OrderID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityContainer Name="ModelStoreContainer">
           <EntitySet Name="Admin" EntityType="Self.Admin" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Customer" EntityType="Self.Customer" Schema="dbo" store:Type="Tables" />
@@ -445,6 +502,8 @@
           <EntitySet Name="Sale" EntityType="Self.Sale" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SaleHistory" EntityType="Self.SaleHistory" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SubCatetory" EntityType="Self.SubCatetory" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TempOrder" EntityType="Self.TempOrder" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TempOrderProduct" EntityType="Self.TempOrderProduct" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK_FinalSubCategory_SubCatetory" Association="Self.FK_FinalSubCategory_SubCatetory">
             <End Role="SubCatetory" EntitySet="SubCatetory" />
             <End Role="FinalSubCategory" EntitySet="FinalSubCategory" />
@@ -521,6 +580,18 @@
             <End Role="MainCategory" EntitySet="MainCategory" />
             <End Role="SubCatetory" EntitySet="SubCatetory" />
           </AssociationSet>
+          <AssociationSet Name="FK_TempOrderProduct_Customer" Association="Self.FK_TempOrderProduct_Customer">
+            <End Role="Customer" EntitySet="Customer" />
+            <End Role="TempOrderProduct" EntitySet="TempOrderProduct" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TempOrderProduct_ProductHistory" Association="Self.FK_TempOrderProduct_ProductHistory">
+            <End Role="ProductHistory" EntitySet="ProductHistory" />
+            <End Role="TempOrderProduct" EntitySet="TempOrderProduct" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TempOrderProduct_TempOrder" Association="Self.FK_TempOrderProduct_TempOrder">
+            <End Role="TempOrder" EntitySet="TempOrder" />
+            <End Role="TempOrderProduct" EntitySet="TempOrderProduct" />
+          </AssociationSet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
@@ -560,6 +631,7 @@
           <NavigationProperty Name="OrderProducts" Relationship="Self.FK_OrderProduct_Customer" FromRole="Customer" ToRole="OrderProduct" />
           <NavigationProperty Name="Reports" Relationship="Self.FK_Report_Customer" FromRole="Customer" ToRole="Report" />
           <NavigationProperty Name="Reviews" Relationship="Self.FK_Review_Customer" FromRole="Customer" ToRole="Review" />
+          <NavigationProperty Name="TempOrderProducts" Relationship="Model.FK_TempOrderProduct_Customer" FromRole="Customer" ToRole="TempOrderProduct" />
         </EntityType>
         <EntityType Name="FinalSubCategory">
           <Key>
@@ -645,6 +717,8 @@
           <NavigationProperty Name="SubCatetory" Relationship="Self.FK_ProductHistory_SubCatetory" FromRole="ProductHistory" ToRole="SubCatetory" />
           <NavigationProperty Name="ProductSizeHistories" Relationship="Self.FK_ProductSizeHistory_ProductHistory" FromRole="ProductHistory" ToRole="ProductSizeHistory" />
           <NavigationProperty Name="SaleHistory" Relationship="Model.FK_ProductHistory_Sale1" FromRole="ProductHistory" ToRole="SaleHistory" />
+          <Property Name="OnHand" Type="Int32" />
+          <NavigationProperty Name="TempOrderProducts" Relationship="Model.FK_TempOrderProduct_ProductHistory" FromRole="ProductHistory" ToRole="TempOrderProduct" />
         </EntityType>
         <EntityType Name="Product">
           <Key>
@@ -1056,6 +1130,20 @@
             <End Role="SaleHistory" EntitySet="SaleHistories" />
             <End Role="ProductHistory" EntitySet="ProductHistories" />
           </AssociationSet>
+          <EntitySet Name="TempOrders" EntityType="Model.TempOrder" />
+          <EntitySet Name="TempOrderProducts" EntityType="Model.TempOrderProduct" />
+          <AssociationSet Name="FK_TempOrderProduct_Customer" Association="Model.FK_TempOrderProduct_Customer">
+            <End Role="Customer" EntitySet="Customers" />
+            <End Role="TempOrderProduct" EntitySet="TempOrderProducts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TempOrderProduct_ProductHistory" Association="Model.FK_TempOrderProduct_ProductHistory">
+            <End Role="ProductHistory" EntitySet="ProductHistories" />
+            <End Role="TempOrderProduct" EntitySet="TempOrderProducts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TempOrderProduct_TempOrder" Association="Model.FK_TempOrderProduct_TempOrder">
+            <End Role="TempOrder" EntitySet="TempOrders" />
+            <End Role="TempOrderProduct" EntitySet="TempOrderProducts" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="Profit">
           <Key>
@@ -1096,6 +1184,66 @@
             </Principal>
             <Dependent Role="ProductHistory">
               <PropertyRef Name="SaleID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="TempOrder">
+          <Key>
+            <PropertyRef Name="OrderID" />
+          </Key>
+          <Property Name="OrderID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="date" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="totalAmount" Type="Decimal" Nullable="false" Precision="19" Scale="4" />
+          <Property Name="Size" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="Quantity" Type="Int32" Nullable="false" />
+          <Property Name="PayMentMethod" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="TempOrderProducts" Relationship="Model.FK_TempOrderProduct_TempOrder" FromRole="TempOrder" ToRole="TempOrderProduct" />
+        </EntityType>
+        <EntityType Name="TempOrderProduct">
+          <Key>
+            <PropertyRef Name="ProductOrderID" />
+          </Key>
+          <Property Name="ProductOrderID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="OrderID" Type="Int32" Nullable="false" />
+          <Property Name="ProductID" Type="Int32" Nullable="false" />
+          <Property Name="CustomerID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Customer" Relationship="Model.FK_TempOrderProduct_Customer" FromRole="TempOrderProduct" ToRole="Customer" />
+          <NavigationProperty Name="ProductHistory" Relationship="Model.FK_TempOrderProduct_ProductHistory" FromRole="TempOrderProduct" ToRole="ProductHistory" />
+          <NavigationProperty Name="TempOrder" Relationship="Model.FK_TempOrderProduct_TempOrder" FromRole="TempOrderProduct" ToRole="TempOrder" />
+        </EntityType>
+        <Association Name="FK_TempOrderProduct_Customer">
+          <End Type="Model.Customer" Role="Customer" Multiplicity="1" />
+          <End Type="Model.TempOrderProduct" Role="TempOrderProduct" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Customer">
+              <PropertyRef Name="CustomerID" />
+            </Principal>
+            <Dependent Role="TempOrderProduct">
+              <PropertyRef Name="CustomerID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TempOrderProduct_ProductHistory">
+          <End Type="Model.ProductHistory" Role="ProductHistory" Multiplicity="1" />
+          <End Type="Model.TempOrderProduct" Role="TempOrderProduct" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ProductHistory">
+              <PropertyRef Name="Product_id" />
+            </Principal>
+            <Dependent Role="TempOrderProduct">
+              <PropertyRef Name="ProductID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TempOrderProduct_TempOrder">
+          <End Type="Model.TempOrder" Role="TempOrder" Multiplicity="1" />
+          <End Type="Model.TempOrderProduct" Role="TempOrderProduct" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TempOrder">
+              <PropertyRef Name="OrderID" />
+            </Principal>
+            <Dependent Role="TempOrderProduct">
+              <PropertyRef Name="OrderID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1197,6 +1345,7 @@
           <EntitySetMapping Name="ProductHistories">
             <EntityTypeMapping TypeName="Model.ProductHistory">
               <MappingFragment StoreEntitySet="ProductHistory">
+                <ScalarProperty Name="OnHand" ColumnName="OnHand" />
                 <ScalarProperty Name="Product_id" ColumnName="Product_id" />
                 <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="CategoryID" ColumnName="CategoryID" />
@@ -1305,6 +1454,28 @@
                 <ScalarProperty Name="StartDate" ColumnName="StartDate" />
                 <ScalarProperty Name="Amount" ColumnName="Amount" />
                 <ScalarProperty Name="SaleID" ColumnName="SaleID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TempOrders">
+            <EntityTypeMapping TypeName="Model.TempOrder">
+              <MappingFragment StoreEntitySet="TempOrder">
+                <ScalarProperty Name="PayMentMethod" ColumnName="PayMentMethod" />
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+                <ScalarProperty Name="Size" ColumnName="Size" />
+                <ScalarProperty Name="totalAmount" ColumnName="totalAmount" />
+                <ScalarProperty Name="date" ColumnName="date" />
+                <ScalarProperty Name="OrderID" ColumnName="OrderID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TempOrderProducts">
+            <EntityTypeMapping TypeName="Model.TempOrderProduct">
+              <MappingFragment StoreEntitySet="TempOrderProduct">
+                <ScalarProperty Name="CustomerID" ColumnName="CustomerID" />
+                <ScalarProperty Name="ProductID" ColumnName="ProductID" />
+                <ScalarProperty Name="OrderID" ColumnName="OrderID" />
+                <ScalarProperty Name="ProductOrderID" ColumnName="ProductOrderID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

@@ -82,7 +82,7 @@
                     <a class="nav-link text-dark" href="/Home/lifestylesCategories/3">LifeStyles</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-danger" href="/Home/saleProducts/5">SALE</a>
+                    <a class="nav-link text-danger" href="/Sale/ProductSale">SALE</a>
                 </li>
             
 
@@ -136,23 +136,39 @@
     <div class="HoverAbleDivCart">
         <div class="row p-2 ">
             <div class="col">
-                @if (Session["cart"] != null) {
+                @if (Session["cart"] != null)
+                {
 
                     foreach (var item in Session["cart"] as IList<E_Commerce.Models.ViewModels.CartViewModel>)
                     {
-                        subtotal += ((double)item.product.UnitPrice * item.count);
+                        if (item.product.Sale != null)
+                        {
+
+
+                            var p = (double)item.product.UnitPrice;
+                            var v = Convert.ToDouble(item.product.Sale.Amount) / 100;
+                            var c = (p - (p * v));
+
+                            subtotal += ((double)c * item.count);
+
+
+                        }
+                        else {
+                            subtotal += ((double)item.product.UnitPrice * item.count);
+                        }
+
                         <div class="container mt-3">
                             <div class="row items">
                                 <div class="col-3 picture">
                                     @{
                                         var image = (item.product.ImageFile).Split('|')[0];
                                     }
-                                        
-                                    <img src="~/Content/image/@image" alt="cartimage" style="max-width:100%"/>
+
+                                    <img src="~/Content/image/@image" alt="cartimage" style="max-width:100%" />
                                 </div>
                                 <div class="col-9 information">
                                     <div class="productname">
-                                        <a class="font-weight-bold"  href="/Product/Details/@item.product.Product_id">@item.product.Product_name</a>
+                                        <a class="font-weight-bold" href="/Product/Details/@item.product.Product_id">@item.product.Product_name</a>
                                     </div>
                                     @if (item.size != null)
                                     {
@@ -162,26 +178,43 @@
                                     }
                                     <div class="productprice">
                                         <span class="p-2 border border-dark">@item.count</span>
-                                        <span class="ml-2">৳ @item.product.UnitPrice</span>
+                                        @if (item.product.Sale != null)
+                                        {
+
+
+                                            var p = (double)item.product.UnitPrice;
+                                            var v = Convert.ToDouble(item.product.Sale.Amount) / 100;
+                                            var c = (p - (p * v));
+
+                                            <span class="ml-2"><s>৳ @item.product.UnitPrice</s> &nbsp; ৳ @c</span>
+
+
+                                        }
+                                        else
+                                        {
+                                            <span class="ml-2">৳ @item.product.UnitPrice</span>
+                                        }
+
+
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    }  
-                                            <hr />
-                                            <div class="container mt-1">
-                                                <div class="row">
-                                                    <div class="col-8">
-                                                        <p>Subtotal:</p>
-                                                    </div>
-                                                    <div class="col-4">
-                                                        <p class="text-secondary">@subtotal tk</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="container m-2">
-                                                <a class="p-2 border border-dark bg-secondary text-light" href="/cart/Index">Go To Cart</a>
-                                            </div>
+                    }
+                    <hr />
+                    <div class="container mt-1">
+                        <div class="row">
+                            <div class="col-8">
+                                <p>Subtotal:</p>
+                            </div>
+                            <div class="col-4">
+                                <p class="text-secondary">@subtotal tk</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="container m-2">
+                        <a class="p-2 border border-dark bg-secondary text-light" href="/cart/Index">Go To Cart</a>
+                    </div>
                 }
                 else
                 {
@@ -213,7 +246,7 @@
                         <a class="nav-link text-light" href="/Home/lifestylesCategories/3">LifeStyles</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-danger" href="/Home/saleProducts/5">SALE</a>
+                        <a class="nav-link text-danger" href="/Sale/ProductSale">SALE</a>
                     </li>
                 </ul>
             </div>

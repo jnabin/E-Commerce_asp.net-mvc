@@ -1,0 +1,99 @@
+﻿@model E_Commerce.Models.Customer
+
+@{
+    var id = Model;
+    ViewBag.Title = "CustomerDetails";
+
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.concat.min.js"></script>
+    <title>Index</title>
+</head>
+<body>
+    <div class="container">
+        <a class="text-secondary" href="/Manager/Index"><u>Home</u></a>
+    </div>
+    <div class="container">
+        <h2>CustomerDetails</h2>
+
+        <hr />
+        <br />
+        <br />
+        <div class="container">
+            <div class="row">
+                <div class="col-3 text-center">
+
+                    <div class="profile-pic-div">
+                        <img src="~/Content/image/@Model.ImageFile" alt="profile pic" id="photo" style="max-width:100%">
+                    </div>
+
+                </div>
+                <div class="col-5">
+
+
+                    <table class="table table-bordered">
+                        <tr>
+                            <td>Customer Name</td>
+                            <td>@Model.CustomerName</td>
+                        </tr>
+                        <tr>
+                            <td>Customer Email</td>
+                            <td>@Model.Email</td>
+                        </tr>
+                        <tr>
+                            <td>Customer Number</td>
+                            <td>@Model.PhoneNumber</td>
+                        </tr>
+                        <tr>
+                            <td>Customer Username</td>
+                            <td>@Model.Username</td>
+                        </tr>
+                        <tr>
+                            <td>Customer Gender</td>
+                            <td>@Model.Gender</td>
+                        </tr>
+                        <tr>
+                            <td>Customer City</td>
+                            <td>@Model.City</td>
+                        </tr>
+                        <tr>
+                            <td>Total Order</td>
+                            <td>@Model.OrderProducts.Count()</td>
+                        </tr>
+                    </table>
+
+
+                </div>
+            </div>
+        </div>
+        <div class="container text-center">
+            <h3 class="text-secondary">
+                Order History
+            </h3>
+            <div class=" container text-left">
+                @foreach (var item in Model.OrderProducts)
+                {
+                    <div class="container bg bg-light p-2 m-2">
+                        <p>Product Name : <a href="/Manager/DetailsFromHistory/@item.ProductID">@item.ProductHistory.Product_name</a></p>
+                        <p>Payment Type : @item.Order.PayMentMethod </p>
+                        <p>Amount : @item.Order.totalAmount tk</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+   
+
+</body>
+</html>
+
+

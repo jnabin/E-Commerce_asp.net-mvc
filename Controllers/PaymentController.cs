@@ -9,7 +9,7 @@ using System.Web.Mvc;
 
 namespace E_Commerce.Controllers
 {
-    public class PaymentController : Controller
+    public class PaymentController : CustomerBaseController
     {
         double totalAmount = 0;
         
@@ -105,15 +105,36 @@ namespace E_Commerce.Controllers
             //create itemlist and add item objects to it  
             foreach (var item in (List<CartViewModel>)(Session["cart"]))
             {
-                totalAmount += (double)(Math.Round((item.product.UnitPrice)/83) * item.count);
-                itemList.items.Add(new Item()
+                if(item.product.Sale != null)
                 {
-                    name = item.product.Product_name,
-                    currency = "USD",
-                    price = Math.Round((item.product.UnitPrice) / 83).ToString(),
-                    quantity = item.count.ToString(),
-                    sku = "sku"
-                });
+                    var p = (double)item.product.UnitPrice;
+                    var v = Convert.ToDouble(item.product.Sale.Amount) / 100;
+                    var c1 = (p - (p * v));
+
+                    totalAmount += (double)(Math.Round((c1) / 83) * item.count);
+                    itemList.items.Add(new Item()
+                    {
+                        name = item.product.Product_name,
+                        currency = "USD",
+                        price = Math.Round((c1) / 83).ToString(),
+                        quantity = item.count.ToString(),
+                        sku = "sku"
+                    });
+
+                }
+                else
+                {
+                    totalAmount += (double)(Math.Round((item.product.UnitPrice) / 83) * item.count);
+                    itemList.items.Add(new Item()
+                    {
+                        name = item.product.Product_name,
+                        currency = "USD",
+                        price = Math.Round((item.product.UnitPrice) / 83).ToString(),
+                        quantity = item.count.ToString(),
+                        sku = "sku"
+                    });
+                }
+               
             }
 
             //Adding Item Details like name, currency, price etc  

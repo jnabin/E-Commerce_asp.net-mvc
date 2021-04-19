@@ -1,0 +1,103 @@
+﻿@model IEnumerable<E_Commerce.Models.TempOrderProduct>
+
+@{
+    Layout = null;
+    var i = false;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.concat.min.js"></script>
+    <title>Index</title>
+</head>
+<body>
+    <div class="container">
+        <hr />
+        <a href="/Logout/Index">Logout</a>
+        <br />
+        <hr />
+        <div class="mt-4 container text-center pushempty">
+            @foreach (var item in Model)
+            {
+                i = true;
+                <div class="row bg bg-light p-2 m-2 deletediv">
+                    <div class="col-8">
+                        <p>Customer Name : <a href="/Manager/CustomerDetails/@item.CustomerID"><u>@item.Customer.CustomerName</u> </a></p>
+                        <p>Product Name : <a href="/Manager/DetailsFromHistory/@item.ProductID"><u> @item.ProductHistory.Product_name</u></a></p>
+                        <p>Payment Type : @item.TempOrder.PayMentMethod </p>
+
+                        <p>Quantity : @item.TempOrder.Quantity pcs</p>
+                        <p>Amount : @item.TempOrder.totalAmount tk</p>
+                        <p>Date : @item.TempOrder.date </p>
+                    </div>
+                    <div class="col-4">
+                        <button type="button" data-orderID-type="@item.ProductOrderID" class="btn btn-primary" onclick="comfirmbtn(this)">Confirm</button>
+                        <button type="button" data-orderID-type="@item.ProductOrderID" class="btn btn-primary" onclick="deletebtn(this)">Delete</button>
+
+                    </div>
+
+
+                </div>
+            }
+            @{
+                if (i == false)
+                {
+                    <p class="text-danger">There Is No Pending Order List</p>
+                }
+            }
+        </div>
+    </div>
+    
+</body>
+</html>
+
+<script>
+    function comfirmbtn(element) {
+        var id = element.getAttribute("data-orderID-type");
+        $.ajax({
+            type: "POST",
+            datatype: "json",
+            url: '/Manager/Confirmorder',
+            data: {
+                id: id
+            },
+            success: function (response) {
+                if (response == "success") {
+                    $(element).parents(".deletediv").remove();
+                    if ($(".deletediv").length == 0) {
+                        $(".pushempty").append(`<p class="text-danger">There Is No Pending Order List</p>`);
+                    }
+                }
+                
+            }
+        });
+    }
+
+    function deletebtn(element) {
+        var id = element.getAttribute("data-orderID-type");
+        $.ajax({
+            type: "POST",
+            datatype: "json",
+            url: '/Manager/Deleteorder',
+            data: {
+                id: id
+            },
+            success: function (response) {
+                if (response == "success") {
+                    $(element).parents(".deletediv").remove();
+                    if ($(".deletediv").length == 0) {
+                        $(".pushempty").append(`<p class="text-danger">There Is No Pending Order List</p>`);
+                    }
+                    
+                }
+            }
+        });
+    }
+</script>

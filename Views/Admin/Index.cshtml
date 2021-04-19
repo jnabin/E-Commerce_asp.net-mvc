@@ -6,6 +6,10 @@
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
     var i = 1;
 }
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.22/pdfmake.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+<script src="~/Scripts/jquery-3.6.0.js"></script>
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
 <hr />
 @if (Model?.Any() == true)
 {
@@ -41,9 +45,30 @@
             </div>
             <div class="col-7">
                 @{
-                    Html.RenderAction("ProductCount", "Admin");
+                    string info = Session["netprofit"].ToString();
                 }
-                
+                <div class="container text-center">
+                    <h3 class="text-secondary"> Net Total Revenue: @info tk.</h3>
+                </div>
+                <div id="chart_div">
+
+                </div>
+                <br />
+                <hr />
+                <div id="piechart_div">
+
+                </div>
+                <br />
+                <hr />
+                <h4 class="text-secondary">Last 15 Days Revenue Table</h4>
+                <br />
+                <button id="btnExport" class="btn btn-light" type="button">Export To Pdf</button>
+
+                <div class="table-responsive">
+                    @{
+                        Html.RenderAction("Profit", "Admin");
+                    }
+                </div>
             </div>
         </div>
     </div>
@@ -52,12 +77,124 @@ else
 {
     <div class="container">
         @{
-            Html.RenderAction("ProductCount", "Admin");
+            string info = Session["netprofit"].ToString();
         }
+        <div class="container text-center">
+            <h3 class="text-secondary"> Net Total Revenue: @info tk.</h3>
+        </div>
+        <div id="chart_div">
+
+        </div>
+        <br />
+        <hr />
+        <div id="piechart_div">
+
+        </div>
+        <br />
+        <hr />
+        <h4 class="text-secondary">Last 15 Days Revenue Table</h4>
+        <br />
+        <button id="btnExport" class="btn btn-light" type="button">Export To Pdf</button>
+        <div class="table-responsive">
+            @{
+                Html.RenderAction("Profit", "Admin");
+            }
+        </div>
+
     </div>
 
 }
-<script>
+    <script>
+
+    var chartData; // globar variable for hold chart data
+    google.load("visualization", "1", { packages: ["corechart"] });
+
+    // Here We will fill chartData
+
+    $(document).ready(function () {
+
+        $.ajax({
+            url: '@Url.Action("ProfitReport", "Admin")',
+            data: "",
+            dataType: "json",
+            type: "POST",
+            contentType: "application/json; chartset=utf-8",
+            success: function (data) {
+                chartData = data;
+
+            },
+            error: function () {
+                alert("Error loading data! Please try again.");
+            }
+        }).done(function () {
+            // after complete loading data
+            google.setOnLoadCallback(drawChart);
+            drawChart();
+        });
+    });
+
+
+    function drawChart() {
+        var data = google.visualization.arrayToDataTable(chartData);
+
+        var options = {
+            title: "Last 10 days Company Revenue",
+            pointSize: 5
+        };
+
+        var columnChart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+        columnChart.draw(data, options);
+
+        }
+
+
+
+    var piechartData; // globar variable for hold chart data
+    google.load("visualization", "1", { packages: ["corechart"] });
+
+    // Here We will fill chartData
+
+    $(document).ready(function () {
+
+        $.ajax({
+            
+            url: '@Url.Action("codVSpaypal", "Admin")',
+            data: "",
+            dataType: "json",
+            type: "POST",
+            contentType: "application/json; chartset=utf-8",
+            success: function (data) {
+                
+                piechartData = data;
+                
+            },
+            error: function () {
+                alert("Error loading data! Please try again.");
+                
+            }
+        }).done(function () {
+            // after complete loading data
+            google.setOnLoadCallback(drawChart);
+            drawChart2();
+        });
+    });
+
+
+    function drawChart2() {
+        var data = google.visualization.arrayToDataTable(piechartData);
+
+        var options = {
+            title: "Cash On Delivery vs PayPal Order",
+            pointSize: 5
+        };
+
+        var pieChart = new google.visualization.PieChart(document.getElementById('piechart_div'));
+        pieChart.draw(data, options);
+
+    }
+
+
+
     function DeleteProduct(item) {
         var id = item.getAttribute("data-productID-type");
         $.ajax({
@@ -81,4 +218,21 @@ else
             }
         });
     }
+
+    
+        $("body").on("click", "#btnExport", function () {
+        html2canvas($('#tblRevenue')[0], {
+            onrendered: function (canvas) {
+                var data = canvas.toDataURL();
+                var docDefinition = {
+                    content: [{
+                        image: data,
+                        width: 500
+                    }]
+                };
+                pdfMake.createPdf(docDefinition).download("Revenue-details.pdf");
+            }
+        });
+    });
+   
 </script>

@@ -1,0 +1,46 @@
+﻿@model E_Commerce.Models.ProductHistory
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    var image = Model.ImageFile.Split('|');
+}
+<hr />
+<div class="container text-secondary ml-5">
+    <a class="text-secondary" href="/Home/Index">Home</a>&nbsp;/&nbsp;<a class="text-secondary" href="/Product/ManProductlist/@Model.MainCategory.Category_id?categoryname=m">@Model.MainCategory.Category_name</a>&nbsp;/&nbsp;@Model.Product_name
+</div>
+
+<div class="container ml-5 mt-4">
+    <div class="row">
+        <div class="col-8">
+            <div class="container ml-0 ">
+                <div class="row">
+                    @foreach (var item in image)
+                    {
+                        <div class="col-sm-6 mt-2">
+                            <img style="max-width:100%" src="~/Content/image/@item" alt="product" />
+                        </div>
+
+                    }
+
+                </div>
+            </div>
+
+        </div>
+        <div class="col-4 information">
+
+            <div class="name mt-3">
+                <h3 class="font-weight-bold">@Model.Product_name</h3>
+            </div>
+            <div class="price mt-4">
+                <h5 class="font-weight-bold">৳ @Model.UnitPrice</h5>
+            </div>
+            <div class="description mt-4">
+                <p class="text-secondary">@Model.Description</p>
+            </div>
+
+           
+        </div>
+    </div>
+</div>
+

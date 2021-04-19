@@ -12,8 +12,6 @@
     $(document).ready(function () {
         $.getJSON("/Customer/GetOrderReportData", function (data) {
 
-
-
             Highcharts.chart('container', {
                 chart: {
                     plotBackgroundColor: null,
@@ -55,10 +53,6 @@
                     {
                         name: 'LifeStyleCategory',
                         y: data.LifeStyleCategory
-                    },
-                    {
-                        name: 'SaleCategory',
-                        y: data.SaleCategory
                     }]
                 }]
             });

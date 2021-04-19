@@ -10,6 +10,6 @@ namespace E_Commerce.ReportContent
         public int MenCategory { get; set; }
         public int WomenCategory { get; set; }
         public int LifeStyleCategory { get; set; }
-        public int SaleCategory { get; set; }
+        
     }
 }

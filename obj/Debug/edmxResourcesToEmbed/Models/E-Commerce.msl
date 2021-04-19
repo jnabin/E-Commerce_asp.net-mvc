@@ -93,6 +93,7 @@
     <EntitySetMapping Name="ProductHistories">
       <EntityTypeMapping TypeName="Model.ProductHistory">
         <MappingFragment StoreEntitySet="ProductHistory">
+          <ScalarProperty Name="OnHand" ColumnName="OnHand" />
           <ScalarProperty Name="Product_id" ColumnName="Product_id" />
           <ScalarProperty Name="Description" ColumnName="Description" />
           <ScalarProperty Name="CategoryID" ColumnName="CategoryID" />
@@ -201,6 +202,28 @@
           <ScalarProperty Name="StartDate" ColumnName="StartDate" />
           <ScalarProperty Name="Amount" ColumnName="Amount" />
           <ScalarProperty Name="SaleID" ColumnName="SaleID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="TempOrders">
+      <EntityTypeMapping TypeName="Model.TempOrder">
+        <MappingFragment StoreEntitySet="TempOrder">
+          <ScalarProperty Name="PayMentMethod" ColumnName="PayMentMethod" />
+          <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+          <ScalarProperty Name="Size" ColumnName="Size" />
+          <ScalarProperty Name="totalAmount" ColumnName="totalAmount" />
+          <ScalarProperty Name="date" ColumnName="date" />
+          <ScalarProperty Name="OrderID" ColumnName="OrderID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="TempOrderProducts">
+      <EntityTypeMapping TypeName="Model.TempOrderProduct">
+        <MappingFragment StoreEntitySet="TempOrderProduct">
+          <ScalarProperty Name="CustomerID" ColumnName="CustomerID" />
+          <ScalarProperty Name="ProductID" ColumnName="ProductID" />
+          <ScalarProperty Name="OrderID" ColumnName="OrderID" />
+          <ScalarProperty Name="ProductOrderID" ColumnName="ProductOrderID" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>

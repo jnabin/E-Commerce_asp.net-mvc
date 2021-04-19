@@ -55,3 +55,6 @@ C:\Users\ASUS\Documents\E-Commerce\E-Commerce\bin\Newtonsoft.Json.dll
 C:\Users\ASUS\Documents\E-Commerce\E-Commerce\bin\Newtonsoft.Json.xml
 C:\Users\ASUS\Documents\E-Commerce\E-Commerce\bin\PayPal.dll
 C:\Users\ASUS\Documents\E-Commerce\E-Commerce\bin\PayPal.xml
+C:\Users\ASUS\Documents\E-Commerce\E-Commerce\bin\Microsoft.ReportViewer.Common.dll
+C:\Users\ASUS\Documents\E-Commerce\E-Commerce\bin\Microsoft.ReportViewer.DataVisualization.dll
+C:\Users\ASUS\Documents\E-Commerce\E-Commerce\bin\Microsoft.ReportViewer.ProcessingObjectModel.dll

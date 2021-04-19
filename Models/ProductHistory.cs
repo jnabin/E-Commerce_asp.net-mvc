@@ -19,6 +19,7 @@ namespace E_Commerce.Models
         {
             this.OrderProducts = new HashSet<OrderProduct>();
             this.ProductSizeHistories = new HashSet<ProductSizeHistory>();
+            this.TempOrderProducts = new HashSet<TempOrderProduct>();
         }
     
         public int Product_id { get; set; }
@@ -33,6 +34,7 @@ namespace E_Commerce.Models
         public Nullable<int> SubCategoryID { get; set; }
         public string SizeCategory { get; set; }
         public Nullable<System.DateTime> AddedDate { get; set; }
+        public Nullable<int> OnHand { get; set; }
     
         public virtual FinalSubCategory FinalSubCategory { get; set; }
         public virtual MainCategory MainCategory { get; set; }
@@ -43,5 +45,7 @@ namespace E_Commerce.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ProductSizeHistory> ProductSizeHistories { get; set; }
         public virtual SaleHistory SaleHistory { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<TempOrderProduct> TempOrderProducts { get; set; }
     }
 }

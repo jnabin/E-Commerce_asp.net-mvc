@@ -77,6 +77,9 @@
                     <div class="price font-weight-bold">
                         ৳ @item.UnitPrice
                     </div>
+                    <div class="review font-weight-bold">
+                        <a href="/AdminProduct/ReviewListbyProduct/@item.Product_id"><u>Total Review : @item.Reviews.Count()</u></a> | <a href="/AdminProduct/OrderListbyProduct/@item.Product_id"><u>Total Order : @{Html.RenderAction("GetTotalOrder", "AdminProduct", new { id = item.Product_id }); }</u></a>
+                    </div>
                 </div>
             </div>
 
@@ -154,7 +157,7 @@
                 $(".modal-header").append(`<h5 class="modal-title">${response.Product_name}</h5><button type="button"  class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`);
                 $(".modal-body").append(`<div class="container"><div class="row border-buttom border-dark"><div class="col-4"><img style="max-width:100%;" src="/Content/image/${response.ImageFile.split('|')[0]}" alt="product-image"></div>` +
                     `<div class="col-8"><p>${response.Product_name}</p><p>${response.Description}</p><p class="font-weight-bold">Price: ৳ ${response.UnitPrice}</p></div></div></hr>` +
-                    `<div class="row"><div class="col mt-2"> <div class="form-group" id="selectformsale"><label for="SalePercentage">Sale Percentage</label><input type="number" min = 1 max = 100 required name="Amount" id = "SalePercentage" class="SalePercentage form-control"/><p class="errsale"></p></div><input type="hidden" name="Product_id" value="${response.Product_id}"/>` +
+                    `<div class="row"><div class="col mt-2"> <div class="form-group" id="selectformsale"><label for="SalePercentage">Sale Percentage</label><input type="number" min = 1 max = 50 required name="Amount" id = "SalePercentage" class="SalePercentage form-control"/><p class="errsale"></p></div><input type="hidden" name="Product_id" value="${response.Product_id}"/>` +
                     `</div></div ></div>`);
                 $(".modal-body").append(`<button type="submit" class="ml-3 mt-2 btn btn-primary mb-2" id="Sale">Add Sale</button>`);
                 $(".modal-body").append(`<button type = "button" class="ml-2 btn btn-secondary" data-dismiss="modal">Close </button >`);
@@ -312,7 +315,10 @@
                             `<div class= "price font-weight-bold">` +
                             `৳ ${price}` +
                             `</div >` +
-                            `</div > ` +
+                            `<div class="review font-weight-bold">` +
+                            `<a href="/AdminProduct/ReviewListbyProduct/${value["Product_id"]}"><u>Total Review : ${value["totalreview"]}</u></a> | <a href="/AdminProduct/OrderListbyProduct/${value["Product_id"]}"><u>Total Order : ${value["totalorder"]}</u></a>` +
+                            `</div>` +
+                            `</div >` +
                             `</div>`);
                     });
                 }

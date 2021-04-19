@@ -4,17 +4,19 @@
     ViewBag.Title = "getCategories";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
     var subcate = Model.SubCatetories;
+    var p = Model.Products.Where(x1 => x1.SaleID == null).GroupBy(y1 => y1.FinalSubCategory.FinalSubCate_id);
     int x = 0;
     int y = 0;
     string c = "x";
     string cname = "DivOverSlide";
     string cnam = "HoverAbleDiv";
+   
 }
 
 <nav class="hide border-top border-secondary">
     <ul class="list-unstyled py-0 mb-0 ml-3 HideAbleList">
         @foreach (var item in subcate)
-        {
+         {
             c = "x" + y;
             if (item.FinalSubCategories.Count == 0 || item.FinalSubCategories == null)
             {
@@ -25,7 +27,7 @@
                 <li class="d-inline-block p-3 ml-3 mr-1 NewIn @c">@item.SubCategory_name</li>
             }
             y++;
-        }
+         }
 
     </ul>
 </nav>
@@ -85,51 +87,42 @@
 
 <div class="container mt-4">
     <div class="row text-center">
+       
         @foreach (var item in subcate)
         {
 
-            var cx = item.FinalSubCategories.OrderByDescending(dt => dt.Products.Count);
+            var cx = item.FinalSubCategories.OrderByDescending(dt => dt.Products.Count(z => z.Sale == null));
             int i = 1;
             foreach (var item2 in cx)
             {
-                foreach (var item3 in item2.Products)
+
+                if (i > 2 || (item2.Products.Count(d => d.Sale == null) == 0))
                 {
-                    if (item3.SaleID != null)
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        if (i > 2 || (item2.Products.Count == 0))
-                        {
-                            break;
-                        }
-                        <div class="col-md-4">
-                            <div class="bg-hoodies" style="background-image:url('/Content/image/background.PNG');">
-                                <div class="uppercontent">
-                                    <div class="content">
-                                        <div class="content-name ">
-                                            <p class="text-light mb-1">@item2.FinalSubCate_name</p>
-                                        </div>
-                                        <div class="shop">
-                                            <p class="text-light">Shop Now</p>
-                                        </div>
-                                        <a class="full-link" href="/Admin/ManProductlist/@item2.FinalSubCate_id?categoryname=f">Shop Now</a>
-                                    </div>
+                    break;
+                }
+                <div class="col-md-4">
+                    <div class="bg-hoodies" style="background-image:url('/Content/image/background.PNG');">
+                        <div class="uppercontent">
+                            <div class="content">
+                                <div class="content-name ">
+                                    <p class="text-light mb-1">@item2.FinalSubCate_name</p>
                                 </div>
+                                <div class="shop">
+                                    <p class="text-light">Shop Now</p>
+                                </div>
+                                <a class="full-link" href="/Admin/ManProductlist/@item2.FinalSubCate_id?categoryname=f">Shop Now</a>
                             </div>
                         </div>
-                        i++;
-                    }
-                }
-
-
+                    </div>
+                </div>
+                i++;
+       
             }
 
 
 
 
-        }
+         }
 
     </div>
 </div>

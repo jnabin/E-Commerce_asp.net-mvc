@@ -44,7 +44,7 @@
                 <button class="btn p-3 border-right border-dark"><i class=" text-secondary far fa-heart"></i></button>
 
             </div>
-            @if (Model.product.ProductSizes.Count > 0)
+            @if (Model.product.SizeCategory != "other" && Model.product.ProductSizes.Count > 0)
             {
                 <form class="mt-4" onsubmit="return validateForm()" action="/Product/updatecart" method="post">
                     <input type="hidden" id="cartindex" name="cartindex" value=@Session["index"]>
@@ -74,6 +74,25 @@
                     <div class="ml-1" id="erroms"></div>
                 </form>
             }
+            else if (Model.product.SizeCategory == "other")
+            {
+                <form class="mt-4" onsubmit="return validateForm()" action="/Product/updatecart" method="post">
+                    <input type="hidden" id="cartindex" name="cartindex" value=@Session["index"]>
+                   
+                    <div class="ml-1 form-group">
+                        <div id="othersize">
+                            <label for="onhand">On Hand</label>
+                            <input type="text" id="onhand" value="@Model.product.OnHand" readonly class="form-control" />
+                        </div>
+                        
+                        <button type="button" onclick="decrement()">-</button>
+                        <input type="number" id="demoInput" name="quantity" min=1 max=100 value="@Model.count" required>
+                        <button type="button" onclick="increment()">+</button>
+                        <button type="submit" class="ml-3 mt-2 btn btn-primary mb-2" id="addto">Update</button>
+                    </div>
+                    <div class="ml-1" id="erroms"></div>
+                </form>
+            }
             else
             {
                 <div class="mt-4 sizenotavailable">
@@ -86,27 +105,44 @@
 <script>
     function increment() {
         $("#erroms").empty();
-        document.getElementById('demoInput').stepUp();
-    }
-    function decrement() {
+                document.getElementById('demoInput').stepUp();
+            }
+            function decrement() {
         $("#erroms").empty();
-        document.getElementById('demoInput').stepDown();
-    }
+                document.getElementById('demoInput').stepDown();
+            }
     $("#demoInput").change(function () {
-        if (Number($("#selectsize").val().split('|')[1]) < ($("#demoInput").val())) {
-            $("#erroms").empty();
-            $("#erroms").append(`<p style="color:red" id="counterror">Not Available.Available Quantity is ${$("#selectsize").val().split('|')[1]}</p>`);
-        }else{
-            $("#erroms").empty();
-    }
-    });
+        if ($("#othersize").length > 0) {
+            if (Number($("#onhand").val()) < ($("#demoInput").val())) {
+                $("#erroms").empty();
+                $("#erroms").append(`<p style="color:red" id="counterror">Not Available.Available Quantity is ${$("#onhand").val()}</p>`);
+            } else {
+                $("#erroms").empty();
+            }
+        }
+        else
+        { 
+            if (Number($("#selectsize").val().split('|')[1]) < ($("#demoInput").val())) {
+                $("#erroms").empty();
+                $("#erroms").append(`<p style="color:red" id="counterror">Not Available.Available Quantity is ${$("#selectsize").val().split('|')[1]}</p>`);
+            } else {
+                $("#erroms").empty();
+            }
+        }
+            });
     function validateForm() {
         var value = Number($("#demoInput").val());
-
-        if (Number($("#selectsize").val().split('|')[1]) < ($("#demoInput").val())) {
-            $("#erroms").empty();
-            $("#erroms").append(`<p style="color:red" id="counterror">Not Available.Available Quantity is ${$("#selectsize").val().split('|')[1]}</p>`);
-        } 
+        if (($("#othersize").length > 0)) {
+            if (Number($("#onhand").val()) < ($("#demoInput").val())) {
+                $("#erroms").empty();
+                $("#erroms").append(`<p style="color:red" id="counterror">Not Available.Available Quantity is ${$("#onhand").val()}</p>`);
+            }
+        } else {
+            if (Number($("#selectsize").val().split('|')[1]) < ($("#demoInput").val())) {
+                $("#erroms").empty();
+                $("#erroms").append(`<p style="color:red" id="counterror">Not Available.Available Quantity is ${$("#selectsize").val().split('|')[1]}</p>`);
+            }
+        }
         if ($("#counterror").length) {
             return false;
         } else {

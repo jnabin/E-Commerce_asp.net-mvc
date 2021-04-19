@@ -15,7 +15,7 @@ namespace E_Commerce.Controllers
     {
         private ProductRepository product = new ProductRepository();
         private ProductOrderRepository OrderProduct = new ProductOrderRepository();
-        
+        private MainCategoryRepository MainCategoryrepo = new MainCategoryRepository();
         private ProductHistoryRepository productHistory = new ProductHistoryRepository();
         // GET: Product
         [HttpPost]
@@ -24,12 +24,27 @@ namespace E_Commerce.Controllers
         {  
             ProductViewModel productView = new ProductViewModel();
             productView.Product_id = product.Get(id).Product_id;
+            if(product.Get(id).OnHand != null)
+            {
+                productView.Onhand = (int)product.Get(id).OnHand;
+            }
+           
             productView.ImageFile = product.Get(id).ImageFile;
             productView.Product_name = product.Get(id).Product_name;
             productView.Description = product.Get(id).Description;
             productView.CategoryID = product.Get(id).CategoryID;
-           
-            productView.UnitPrice = product.Get(id).UnitPrice;            
+            if (product.Get(id).Sale != null)
+            {
+                var p = (double)product.Get(id).UnitPrice;
+                var v = Convert.ToDouble(product.Get(id).Sale.Amount) / 100;
+                var c = (p - (p * v));
+                productView.UnitPrice = (decimal)c;
+            }
+            else
+            {
+                productView.UnitPrice = product.Get(id).UnitPrice;
+            }
+                      
             productView.FinalSubCategoryID = product.Get(id).FinalSubCategoryID;
             productView.SubCategoryID = product.Get(id).SubCategoryID;
             productView.SizeCategory = product.Get(id).SizeCategory;
@@ -75,12 +90,12 @@ namespace E_Commerce.Controllers
             {
                 v = Convert.ToInt32(sizename.Split('|')[0]);
             }
-            else
+            else if(sizename != "")
             {
                 v = Convert.ToInt32(sizename);
             }
             ProductSizeRepository sizeRepository = new ProductSizeRepository();
-            if (sizeRepository.Get(v).Count < quantity)
+            if (v!=0 && sizeRepository.Get(v).Count < quantity)
             {
                 return RedirectToAction(Session["actionname"].ToString(), new { id = Session["reid"], categoryname = Session["catname"] });
             }
@@ -225,12 +240,12 @@ namespace E_Commerce.Controllers
             {
                 v = Convert.ToInt32(sizename.Split('|')[0]);
             }
-            else
+            else if(sizename != "")
             {
                 v = Convert.ToInt32(sizename);
             }
             ProductSizeRepository sizeRepository = new ProductSizeRepository();
-            if (sizeRepository.Get(v).Count < quantity)
+            if (v!=0 && sizeRepository.Get(v).Count < quantity)
             {
                 return RedirectToAction(Session["actionname"].ToString(), new { id = Session["reid"], categoryname = Session["catname"] });
             }
@@ -484,6 +499,12 @@ namespace E_Commerce.Controllers
             }
 
             return Json(sortmodel);
+        }
+
+        [HttpGet]
+        public ActionResult saleProducts(int id)
+        {
+            return View(MainCategoryrepo.Get(id));
         }
     }
 }

@@ -20,6 +20,7 @@ namespace E_Commerce.Models
             this.OrderProducts = new HashSet<OrderProduct>();
             this.Reports = new HashSet<Report>();
             this.Reviews = new HashSet<Review>();
+            this.TempOrderProducts = new HashSet<TempOrderProduct>();
         }
     
         public int CustomerID { get; set; }
@@ -41,5 +42,7 @@ namespace E_Commerce.Models
         public virtual ICollection<Report> Reports { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Review> Reviews { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<TempOrderProduct> TempOrderProducts { get; set; }
     }
 }

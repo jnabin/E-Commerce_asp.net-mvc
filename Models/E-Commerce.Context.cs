@@ -42,5 +42,7 @@ namespace E_Commerce.Models
         public virtual DbSet<SubCatetory> SubCatetories { get; set; }
         public virtual DbSet<Profit> Profits { get; set; }
         public virtual DbSet<SaleHistory> SaleHistories { get; set; }
+        public virtual DbSet<TempOrder> TempOrders { get; set; }
+        public virtual DbSet<TempOrderProduct> TempOrderProducts { get; set; }
     }
 }

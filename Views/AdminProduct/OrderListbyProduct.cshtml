@@ -1,0 +1,26 @@
+﻿@model IEnumerable<E_Commerce.Models.OrderProduct>
+
+@{
+    ViewBag.Title = "LifestyleProductlist";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";    
+}
+
+<div class="container text-center">
+    <h3 class="text-secondary">
+        Order History 
+    </h3>
+    <div class=" container text-left">
+        @foreach (var item in Model)
+        {
+        <div class="container bg bg-light p-2 m-2">
+            <p>Customer Name : <a href="/Admin/CustomerDetails/@item.CustomerID"><u>@item.Customer.CustomerName</u> </a></p>
+            <p>Product Name : <a href="/AdminProduct/DetailsFromHistory/@item.ProductID"><u> @item.ProductHistory.Product_name</u></a></p>
+            <p>Payment Type : @item.Order.PayMentMethod </p>
+           
+            <p>Quantity : @item.Order.Quantity pcs</p>
+            <p>Amount : @item.Order.totalAmount tk</p>
+            <p>Profit : @item.Profits.Where(x => x.ProductOrderID == item.ProductOrderID).FirstOrDefault().ProfitAmount tk</p>
+        </div>
+        }
+    </div>
+</div>

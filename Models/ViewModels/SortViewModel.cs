@@ -11,6 +11,8 @@ namespace E_Commerce.Models.ViewModels
         public string Product_name { get; set; } 
         public decimal UnitPrice { get; set; }
         public string ImageFile { get; set; }
+        public int totalorder { get; set; }
+        public int totalreview { get; set; }
 
     }
 }

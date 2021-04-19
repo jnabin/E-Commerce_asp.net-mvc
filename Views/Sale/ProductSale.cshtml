@@ -1,0 +1,254 @@
+﻿@model IEnumerable<E_Commerce.Models.Product>
+
+@{
+    ViewBag.Title = "ManProductlist";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    Session["actionname"] = "ManProductlist";
+    int cid = 0;
+    string cname = "";
+    if (Model?.Any() == true && Model.ElementAt(0).FinalSubCategory != null)
+    {
+        cid = (int)Model.ElementAt(0).FinalSubCategoryID;
+        cname = "f";
+    }
+    else if (Model?.Any() == true && Model.ElementAt(0).SubCatetory != null)
+    {
+        cid = (int)Model.ElementAt(0).SubCategoryID;
+        cname = "s";
+    }
+    else if (Model?.Any() == true && Model.ElementAt(0).MainCategory != null)
+    {
+        cid = (int)Model.ElementAt(0).MainCategory.Category_id;
+        cname = "m";
+    }
+}
+
+<hr />
+<div class="container mt-4">
+    <div class="row text-center maincontent">
+        @foreach (var item in Model)
+        {
+            string image = (item.ImageFile).Split('|')[0];
+            <div class="col-md-4 deleteParent">
+                <div class="bg-hoodies" style="background-image:url('/Content/image/@image');">
+                    <div class="uppercontent">
+                        <div class="content2" onmous>
+
+                            <a class="full-link" href="/Admin/ProductDetails/@item.Product_id">Shop Now</a>
+                        </div>
+                        <div class="hoverAbleInformation">
+
+                            <button class="btn p-3 border-right border-dark"><i class="q text-secondary fas fa-search-plus"></i></button>
+                            <button onclick="addToCart(this)" data-productID-type="@item.Product_id" class="p-3 btn border-right border-dark" data-toggle="modal" data-target="#exampleModal"><i class="c text-secondary fas fa-shopping-bag"></i></button>
+                            <button class="btn p-3 border-right border-dark"><i class="w text-secondary far fa-heart"></i></button>
+
+                        </div>
+
+                    </div>
+                </div>
+                <div class="details">
+                    <div class="name">
+                        @item.Product_name
+                    </div>
+                    <div class="price font-weight-bold">
+                        @{
+                            var p = (double)item.UnitPrice;
+                            var v = Convert.ToDouble(item.Sale.Amount) / 100;
+                            var c = (p - (p * v));
+                        }
+                        <p><s>৳ @p</s> &nbsp; ৳ @c</p>
+                    </div>
+                </div>
+            </div>
+
+        }
+
+    </div>
+</div>
+<form id="cartform" enctype="multipart/form-data" action="/Product/addcart" method="post">
+    <div id="exampleModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+
+                </div>
+                <div class="modal-body">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+
+<div id="StopSale" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header stopmodalh">
+
+            </div>
+            <div class="modal-body stopmodalb">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="deleteModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header deleteHeader">
+
+            </div>
+            <div class="modal-body deleteBody">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function increment() {
+        $("#errorms").empty();
+        document.getElementById('demoInputx').stepUp();
+    }
+    function decrement() {
+        $("#errorms").empty();
+        document.getElementById('demoInputx').stepDown();
+    }
+    function addToCart(product) {
+        var id = product.getAttribute("data-productID-type");
+
+        $.ajax({
+            type: "POST",
+            datatype: "json",
+            url: '/Product/GetDetails',
+            data: {
+                id: id
+            },
+
+            success: function (response) {
+
+                $(".modal-header").append(`<h5 class="modal-title">${response.Product_name}</h5><button type="button"  class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`);
+                $(".modal-body").append(`<div class="container"><div class="row border-buttom border-dark"><div class="col-4"><img style="max-width:100%;" src="/Content/image/${response.ImageFile.split('|')[0]}" alt="product-image"></div>` +
+                    `<div class="col-8"><p>${response.Product_name}</p><p>${response.Description}</p></div></div></hr></hr><div class="row price font-weight-bold"><div class="col mt-2 border-top border-secondary "> Price: ৳ ${response.UnitPrice}</div></div >` +
+                    `<div class="row"><div class="col mt-2"> <div class="form-group" id="selectform"><label for="exampleFormControlSelect1">Size</label><select required class="form-control" id="exampleFormControlSelect1" name = "sizename"></select></div></div></div ></div>`);
+                if (response.sizename.length == 0) {
+                    $("#selectform").html(`<p style="color:red">No size available<p>`);
+                } else {
+                    var i;
+
+                    for (i = 0; i < response.sizename.length; i++) {
+
+                        $("#exampleFormControlSelect1").append(`<option value="${response.sizeid[i]}">${response.sizename[i]}</option>`);
+                    }
+
+                    $(".modal-body").append(`<div  class="ml-3 form-group"><button  type="button" onclick="decrement()">-</button><input type = "number" id = "demoInputx" name="quantity" min = 1 max = 100 required><button type="button" onclick="increment()">+</button></div>`);
+                    $(".modal-body").append(`<div class="ml-3" id="errorms"></div>`);
+                    $(".modal-body").append(`<button type="submit" class="ml-3 mt-2 btn btn-primary mb-2" id="addto">Add To Cart</button>`);
+
+                    $(".modal-body").append(`<input type = "hidden" id = "productid" name="productid" value=${response.Product_id}>`);
+
+                    $(".modal-body").append(`<button type = "button" class="ml-2 btn btn-secondary" data-dismiss="modal">Close </button >`);
+
+                    $("#demoInputx").change(function () {
+
+                        var value = Number($("#exampleFormControlSelect1").val());
+
+                        if (response.sizecount[response.sizeid.indexOf(value)] >= Number($("#demoInputx").val())) {
+                            $("#errorms").empty();
+
+                        } else {
+                            $("#errorms").empty();
+
+                            $("#errorms").append(`<p style="color:red" id="modalerror">Not Available.Available Quantity is ${response.sizecount[response.sizeid.indexOf(value)]}</p>`);
+                        }
+                    });
+                    $("#cartform").submit(function (e) {
+                        var value = Number($("#exampleFormControlSelect1").val());
+
+                        if (response.sizecount[response.sizeid.indexOf(value)] >= Number($("#demoInputx").val())) {
+
+                            $("#errorms").empty();
+
+                        } else {
+
+                            $("#errorms").empty();
+
+                            $("#errorms").append(`<p style="color:red" id="modalerror">Not Available.Available Quantity is ${response.sizecount[response.sizeid.indexOf(value)]}</p>`);
+                        }
+                        if (!$("#modalerror").length) {
+                            return true;
+                        } else {
+                            e.preventDefault();
+                        }
+
+                    });
+
+                }
+
+            }
+        });
+        if (!$("#exampleModal").hasClass("show")) {
+            $(".modal-header").html("");
+            $(".modal-body").html("");
+        }
+
+
+    }
+
+    $(document).ready(function () {
+        $('#sortby').change(function () {
+            var value = $("#sortby").val();
+
+            $.ajax({
+                type: "POST",
+                datatype: "json",
+                url: '/Product/SortedProductList',
+                data: {
+                    value: value
+                },
+                success: function (response) {
+                    $(".maincontent").empty();
+                    $("#sortby").val(value);
+                    $.each(response, function (index, value) {
+                        var image = value["ImageFile"].split("|")[0];
+                        var id = value["Product_id"];
+                        var name = value["Product_name"];
+                        var price = value["UnitPrice"];
+
+                        $(".maincontent").append(`<div class="col-md-4">` +
+                            `<div class="bg-hoodies" style="background-image:url('/Content/image/${image}');">` +
+                            `<div class="uppercontent">` +
+                            `<div class="content2" onmous>` +
+
+                            `<a class="full-link" href="/Product/Details/${value["Product_id"]}">Shop Now</a>` +
+                            `</div>` +
+                            `<div class="hoverAbleInformation">` +
+                            `<button class="btn p-3 border-right border-dark"><i class="q text-secondary fas fa-search-plus"></i></button>` +
+                            `<button  onclick="addToCart(this)" data-productID-type="${id}" class="p-3 btn border-right border-dark"  data-toggle="modal" data-target="#exampleModal"><i class="c text-secondary fas fa-shopping-bag"></i></button>` +
+                            `<button  class="btn p-3 border-right border-dark"><i class="w text-secondary far fa-heart"></i></button>` +
+
+                            `</div>` +
+
+                            `</div>` +
+                            `</div>` +
+                            `<div class="details">` +
+                            `<div class="name">` +
+                            `${name}` +
+                            `</div>` +
+                            `<div class= "price font-weight-bold">` +
+                            `৳ ${price}` +
+                            `</div >` +
+                            `</div > ` +
+                            `</div>`);
+                    });
+                }
+            });
+
+        });
+    });
+
+</script>

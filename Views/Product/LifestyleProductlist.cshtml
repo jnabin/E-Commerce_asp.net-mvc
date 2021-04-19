@@ -49,7 +49,7 @@
 </div>
 <hr />
 <div class="container mt-4">
-    <div class="row text-center">
+    <div class="row text-center maincontent">
         @foreach (var item in Model)
         {
             string image = (item.ImageFile).Split('|')[0];
@@ -122,20 +122,13 @@
             },
 
             success: function (response) {
+                
                 $(".modal-header").append(`<h5 class="modal-title">${response.Product_name}</h5><button type="button"  class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`);
                 $(".modal-body").append(`<div class="container"><div class="row border-buttom border-dark"><div class="col-4"><img style="max-width:100%;" src="/Content/image/${response.ImageFile.split('|')[0]}" alt="product-image"></div>` +
                     `<div class="col-8"><p>${response.Product_name}</p><p>${response.Description}</p></div></div></hr></hr><div class="row price font-weight-bold"><div class="col mt-2 border-top border-secondary "> Price: ৳ ${response.UnitPrice}</div></div >` +
-                    `<div class="row"><div class="col mt-2"> <div class="form-group" id="selectform"><label for="exampleFormControlSelect1">Size</label><select required class="form-control" id="exampleFormControlSelect1" name = "sizename"></select></div></div></div ></div>`);
-                if (response.sizename.length == 0) {
-                    $("#selectform").html(`<p style="color:red">No size available<p>`);
-                } else {
-                    var i;
-
-                    for (i = 0; i < response.sizename.length; i++) {
-
-                        $("#exampleFormControlSelect1").append(`<option value="${response.sizeid[i]}">${response.sizename[i]}</option>`);
-                    }
-
+                    `<div class="row"><div class="col mt-2"> </div></div ></div>`);
+                   var i;
+             
                     $(".modal-body").append(`<div  class="ml-3 form-group"><button  type="button" onclick="decrement()">-</button><input type = "number" id = "demoInput" name="quantity" min = 1 max = 100 required><button type="button" onclick="increment()">+</button></div>`);
                     $(".modal-body").append(`<div class="ml-3" id="errorms"></div>`);
                     $(".modal-body").append(`<button type="submit" class="ml-3 mt-2 btn btn-primary mb-2" id="addto">Add To Cart</button>`);
@@ -144,21 +137,21 @@
 
                     $(".modal-body").append(`<button type = "button" class="ml-2 btn btn-secondary" data-dismiss="modal">Close </button >`);
 
-                    $("#demoInput").change(function () {
-                        var value = Number($("#exampleFormControlSelect1").val());
+                $("#demoInput").change(function () {
+                    var value = Number(response.Onhand);
 
-                        if (response.sizecount[response.sizeid.indexOf(value)] >= Number($("#demoInput").val())) {
+                    if (value >= Number($("#demoInput").val())) {
+                        $("#errorms").empty();
+                    }else {
                             $("#errorms").empty();
-                        } else {
-                            $("#errorms").empty();
-                            $("#errorms").append(`<p style="color:red" id="modalerror">Not Available.Available Quantity is ${response.sizecount[response.sizeid.indexOf(value)]}</p>`);
+                        $("#errorms").append(`<p style="color:red" id="modalerror">Not Available.Available Quantity is ${response.Onhand}</p>`);
                         }
                     });
                     $("#cartform").submit(function (e) {
                             
-                        var value = Number($("#exampleFormControlSelect1").val());
+                        var value = Number(response.Onhand);
                                 
-                        if (response.sizecount[response.sizeid.indexOf(value)] >= Number($("#demoInput").val())) {
+                        if (value >= Number($("#demoInput").val())) {
                                    
                             $("#errorms").empty();
 
@@ -166,7 +159,7 @@
                                     
                             $("#errorms").empty();
 
-                            $("#errorms").append(`<p style="color:red" id="modalerror">Not Available.Available Quantity is ${response.sizecount[response.sizeid.indexOf(value)]}</p>`);
+                            $("#errorms").append(`<p style="color:red" id="modalerror">Not Available.Available Quantity is ${response.Onhand}</p>`);
                         }
 
                         if (!$("#modalerror").length) {
@@ -177,7 +170,7 @@
 
                     });
 
-                }
+                
 
             }
         });

@@ -35,6 +35,20 @@ namespace E_Commerce.Repositories
             }
 
         }
+
+        public Manager managerValidateLogin(string username, string password)
+        {
+            if (context.Set<Manager>().FirstOrDefault(c => c.Username == username && c.password == password) != null)
+            {
+                return context.Set<Manager>().FirstOrDefault(c => c.Username == username && c.password == password);
+            }
+            else
+            {
+                return null;
+            }
+
+        }
+
         public bool GetByName(string name)
         {
             if(context.Set<Customer>().FirstOrDefault(c => c.Username == name) != null  || context.Set<Admin>().FirstOrDefault(c => c.Username == name) != null || context.Set<Manager>().FirstOrDefault(c => c.Username == name) != null)
@@ -82,14 +96,29 @@ namespace E_Commerce.Repositories
             return context.Set<Product>().Where(p=>p.FinalSubCategoryID==fid && p.SaleID == null).ToList();
         }
 
+        public List<Product> GetfromFinalCategorysale(int fid)
+        {
+            return context.Set<Product>().Where(p => p.FinalSubCategoryID == fid && p.SaleID != null).ToList();
+        }
+
         public List<Product> GetfromSubCategory(int sid)
         {
             return context.Set<Product>().Where(p => p.SubCategoryID == sid && p.SaleID == null).ToList();
         }
 
+        public List<Product> GetfromSubCategorysale(int sid)
+        {
+            return context.Set<Product>().Where(p => p.SubCategoryID == sid && p.SaleID != null).ToList();
+        }
+
         public List<Product> GetfromMainCategory(int mid)
         {
             return context.Set<Product>().Where(p => p.CategoryID == mid && p.SaleID == null).ToList();
+        }
+
+        public List<Product> GetfromMainCategorysale(int mid)
+        {
+            return context.Set<Product>().Where(p => p.CategoryID == mid && p.SaleID != null).ToList();
         }
 
         public int GetMainCategaoryID(int id)
@@ -115,12 +144,13 @@ namespace E_Commerce.Repositories
 
         public List<Product> ProductsWithoutSize()
         {
-            var v = context.Set<Product>().Where(x => x.SizeCategory != "others");
+            var v = context.Set<Product>().Where(x => x.SizeCategory != "other");
             return v.Where(x=>x.ProductSizes.Count==0).ToList();
         }
 
         public List<TEntity> GetAll()
         {
+            var x = context.Set<TEntity>().ToList();
             return context.Set<TEntity>().ToList();
         }
 
@@ -150,11 +180,28 @@ namespace E_Commerce.Repositories
            return context.Set<OrderProduct>().Where(x => x.CustomerID == id).ToList();
         }
 
+        public List<TempOrderProduct> gettempordersbycid(int id)
+        {
+            return context.Set<TempOrderProduct>().Where(x => x.CustomerID == id).ToList();
+        }
+
         public void Update(TEntity entity)
         {
             context.Entry(entity).State = EntityState.Modified;
             context.SaveChanges();
         }
+
+        /*public Order getfromtorderproductid(int id)
+        {
+           return context.Set<Order>().Where(x => x.)
+        }
+
+        public void deletefromtemporder(int id)
+        {
+            TempOrder torder = 
+            context.Entry(entity).State = EntityState.Modified;
+            context.SaveChanges();
+        }*/
 
         private void ProductUpdate(Product product)
         {
@@ -169,6 +216,7 @@ namespace E_Commerce.Repositories
             item.Description = product.Description;
             item.UnitPrice = product.UnitPrice;
             item.Product_name = product.Product_name;
+            item.OnHand = product.OnHand;
             ProductUpdate(item);
 
         }

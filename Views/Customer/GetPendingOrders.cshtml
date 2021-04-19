@@ -1,0 +1,124 @@
+﻿@model IEnumerable<E_Commerce.Models.TempOrderProduct>
+
+@{
+    double total = 0;
+    int j = 1;
+}
+
+<hr />
+<div class="container text-center mt-2">
+    <div class="row">
+        <div class="col">
+            <h3 class="text-secondary">Pending Order History</h3>
+        </div>
+    </div>
+</div>
+<br>
+<div class="container mx-0" id="tblorder">
+    <div class="container text-center">
+        <div class="row">
+            <div class="col-1">
+                <p class="text-secondary">#</p>
+            </div>
+            <div class="col-1">
+                <p class="text-secondary">Date</p>
+            </div>
+            <div class="col-1">
+                <p class="text-secondary">PICTURE</p>
+            </div>
+            <div class="col-4">
+                <p class="text-secondary">PRODUCT(S)</p>
+            </div>
+            <div class="col-1">
+                <p class="text-secondary">PRICE(৳)</p>
+            </div>
+            <div class="col-2">
+                <p class="text-secondary">Payment</p>
+            </div>
+            <div class="col-1">
+                <p class="text-secondary">QUANTITY</p>
+            </div>
+            <div class="col-1">
+                <p class="text-secondary">TOTAL</p>
+            </div>
+        </div>
+    </div>
+    <hr />
+
+    @foreach (var item in Model)
+    {
+        int i = 0;
+
+        <div class="container text-center">
+            <div class="row">
+                <div class="col-1">
+                    <p class="text-secondary">@j</p>
+                </div>
+                <div class="col-1">
+                    <p class="text-secondary">@item.TempOrder.date</p>
+                </div>
+                <div class="col-1">
+                    @{string image = (item.ProductHistory.ImageFile).Split('|')[0];}
+                    <img style="max-width:100%;" src="~/Content/image/@image" alt="product_image" />
+
+                </div>
+                <div class="col-4">
+                    <div class="container text-center">
+                        <p class="font-weight-bold">@item.ProductHistory.Product_name</p>
+                        @if (item.TempOrder.Size != null)
+                        {
+                            <p>SIZE:&nbsp;@item.TempOrder.Size</p>
+                        }
+
+                    </div>
+                </div>
+                <div class="col-1">
+                    @if (item.ProductHistory.SaleHistory != null)
+                    {
+
+                        var p = (double)item.ProductHistory.UnitPrice;
+                        var v = Convert.ToDouble(item.ProductHistory.SaleHistory.Amount) / 100;
+                        var c1 = (p - (p * v));
+                        <p><s>@item.ProductHistory.UnitPrice</s> &nbsp; @c1</p>
+                    }
+                    else
+                    {
+                        var uprice = (double)item.ProductHistory.UnitPrice;
+                        <p>@uprice</p>
+                    }
+
+                </div>
+                <div class="col-2">
+                    <p>@item.TempOrder.PayMentMethod</p>
+                </div>
+                <div class="col-1">
+                    <p class="p-2 border border-secondary">@item.TempOrder.Quantity</p>
+                </div>
+                @{
+                    double subtotal = 0;
+                    if (item.ProductHistory.SaleHistory != null)
+                    {
+
+                        var p = (double)item.ProductHistory.UnitPrice;
+                        var v = Convert.ToDouble(item.ProductHistory.SaleHistory.Amount) / 100;
+                        var c1 = (p - (p * v));
+                        subtotal = (double)(item.TempOrder.Quantity * c1);
+                        total += subtotal;
+                    }
+                    else
+                    {
+                        subtotal = (double)(item.TempOrder.Quantity * item.ProductHistory.UnitPrice);
+                        total += subtotal;
+                    }
+                }
+
+                <div class="col-1">
+                    <p>৳ @subtotal</p>
+                </div>
+            </div>
+        </div>
+        <hr />
+        i++;
+        j++;
+    }
+</div>

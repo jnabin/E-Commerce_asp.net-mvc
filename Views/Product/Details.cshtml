@@ -40,34 +40,48 @@
             </div>
             <div class="extraactivities mt-4">
                 <button class="btn p-3 border-right border-dark"><i class="text-secondary far fa-envelope"></i></button>
-                
+
                 <button class="btn p-3 border-right border-dark"><i class=" text-secondary far fa-heart"></i></button>
 
             </div>
-            @if (Model.ProductSizes.Count > 0)
+            @if (Model.ProductSizes.Count > 0 && Model.SizeCategory != "other")
             {
-            <form class="mt-4" onsubmit="return validateForm()" action="/Product/addcart" method="post">
-                <input type="hidden" id="productid" name="productid" value=@Model.Product_id>
-                <div class="form-group">
-                    <label for="selectsize">Size<sub style="color:red">*</sub></label>
-                    <select class="form-control" id="selectsize" name="sizename">
-                        @foreach (var item in Model.ProductSizes)
-                        {
-                            if (item.Count > 0)
+                <form class="mt-4" onsubmit="return validateForm()" action="/Product/addcart" method="post">
+                    <input type="hidden" id="productid" name="productid" value=@Model.Product_id>
+                    <div class="form-group">
+                        <label for="selectsize">Size<sub style="color:red">*</sub></label>
+                        <select class="form-control" id="selectsize" name="sizename">
+                            @foreach (var item in Model.ProductSizes)
                             {
-                                <option value="@item.ProductSizeID|@item.Count">@item.SizeName</option>
+                                if (item.Count > 0)
+                                {
+                                    <option value="@item.ProductSizeID|@item.Count">@item.SizeName</option>
+                                }
                             }
-                        }
-                    </select>
-                </div>
-                <div class="ml-1 form-group">
-                    <button type="button" onclick="decrement()">-</button>
-                    <input type="number" id="demoInput" name="quantity" min=1 max=100 value="1" required>
-                    <button type="button" onclick="increment()">+</button>
-                    <button type="submit" class="ml-3 mt-2 btn btn-primary mb-2" id="addto">Add To Cart</button>
-                </div>
-                <div class="ml-1" id="erroms"></div>
-            </form>
+                        </select>
+                    </div>
+                    <div class="ml-1 form-group">
+                        <button type="button" onclick="decrement()">-</button>
+                        <input type="number" id="demoInput" name="quantity" min=1 max=100 value="1" required>
+                        <button type="button" onclick="increment()">+</button>
+                        <button type="submit" class="ml-3 mt-2 btn btn-primary mb-2" id="addto">Add To Cart</button>
+                    </div>
+                    <div class="ml-1" id="erroms"></div>
+                </form>
+            }
+            else if (Model.SizeCategory == "other")
+            {
+                <form class="mt-4" onsubmit="return validateForm()" action="/Product/addcart" method="post">
+                    <input type="hidden" id="productid" name="productid" value=@Model.Product_id>
+                    
+                    <div class="ml-1 form-group">
+                        <button type="button" onclick="decrement()">-</button>
+                        <input type="number" id="demoInput" name="quantity" min=1 max=100 value="1" required>
+                        <button type="button" onclick="increment()">+</button>
+                        <button type="submit" class="ml-3 mt-2 btn btn-primary mb-2" id="addto">Add To Cart</button>
+                    </div>
+                    <div class="ml-1" id="erroms"></div>
+                </form>
             }
             else
             {

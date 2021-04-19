@@ -8,20 +8,32 @@
 
 <script src="~/Scripts/jquery.validate.min.js"></script>
 <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+<script src="~/Scripts/jquery-3.6.0.js"></script>
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.22/pdfmake.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+
 <hr />
 <div class="container">
     <div class="row">
         <div class="col-2 border-right border-dark">
             <h3>My Account</h3>
             <ul class="list-unstyled">
-                <li><a onclick="showinfo(this)" class="removefocus" href="#">Customer Info</a></li>
+                <li><a class="removefocus" onclick="showsalevsregular(this)" href="#">Sale Vs Regular Order</a></li>
+                <li><a onclick="showinfo(this)" class="text-secondary removefocus" href="#">Customer Info</a></li>
                 <li><a class="text-secondary removefocus" href="#">Addresses</a></li>
+                <li><a onclick="showpendingorders(this)" class="text-secondary removefocus" href="#">Pending Orders</a></li>
                 <li><a onclick="showorders(this)" class="text-secondary removefocus" href="#">Orders</a></li>
                 <li><a onclick="showreport(this)" class="text-secondary removefocus" href="#">Orders Report</a></li>
-                <li><a class="text-secondary removefocus" onclick="showpasschanges(this)"  href="#">Change Password</a></li>
+                <li><a class="text-secondary removefocus" onclick="showpasschanges(this)" href="#">Change Password</a></li>
                 <li><a class="text-secondary removefocus" onclick="showreviews(this)" href="#">My Product Reviews</a></li>
+
             </ul>
         </div>
+        <div class="col-10 salevsregular" id="chart_div">
+
+        </div>
+
         <div class="col-10 changepass " style="display:none">
             <div class="container text-center">
                 <h4 class="text-dark"> Change Password</h4>
@@ -58,33 +70,44 @@
                 <br />
                 @foreach (var item in Model.Reviews)
                 {
-                <div class="container text-left">
-                    <div class="container">
-                        <p class="text-secondary text-uppercase">@item.ReviewTitle</p>
+                    <div class="container text-left">
+                        <div class="container">
+                            <p class="text-secondary text-uppercase">@item.ReviewTitle</p>
+                        </div>
+
+                        <hr />
+                        <div class="container">
+                            <p class="text-secondary">@item.Description</p>
+                        </div>
+                        <div class="container">
+                            <p class="text-secondary">Product review for: <a class="text-secondary" href="/Product/Details/@item.ProductID"><u>@item.Product.Product_name</u></a> | Date: @item.Date</p>
+                        </div>
+                        <br />
                     </div>
 
-                    <hr />
-                    <div class="container">
-                        <p class="text-secondary">@item.Description</p>
-                    </div>
-                    <div class="container">
-                        <p class="text-secondary">Product review for: <a class="text-secondary" href="/Product/Details/@item.ProductID"><u>@item.Product.Product_name</u></a> | Date: @item.Date</p>
-                    </div>
-                    <br />
-                </div>
-                
                 }
             </div>
-            </div>
+        </div>
         <div class="col-10 ordersdiv" style="display:none">
+            <br />
+            <button id="btnExport" class="btn btn-light" type="button">Export To Pdf</button>
             @{
                 Html.RenderAction("GetOrders", "Customer");
             }
         </div>
+
+        <div class="col-10 pendingordersdiv" style="display:none">
+            <br />
+           
+            @{
+                Html.RenderAction("GetPendingOrders", "Customer");
+            }
+        </div>
+
         <div class="col-10 reportdiv" style="display:none">
             @Html.Partial("CustomerOrderReports");
         </div>
-        <div class="col-10 infodiv">
+        <div class="col-10 infodiv" style="display: none">
             <div class="container text-center">
                 <h3 class="text-secondary">My Account - Customer Info</h3>
                 <br />
@@ -94,7 +117,7 @@
             <div class="container">
                 <div class="row">
                     <div class="col-3 text-center">
-                        <form method="post" action="/Customer/updateImage" enctype="multipart/form-data" id="ajaxform">
+                        <form method="post" action="/Customer/updateImage" enctype="multipart/form-data" id="ajaxformsub">
                             @Html.HiddenFor(model => model.CustomerID)
                             @Html.HiddenFor(model => model.CustomerName)
                             @Html.HiddenFor(model => model.Email)
@@ -183,10 +206,9 @@
                                 </div>
 
                                 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                                @Html.HiddenFor(model => model.ImageFile)
-
-                                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
                                 @Html.HiddenFor(model => model.password)
+
+                                <input type="hidden" value="@Model.ImageFile" id="updateimg" name="ImageFile" />
 
                                 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
                                 @Html.HiddenFor(model => model.usertype)
@@ -224,6 +246,53 @@
 
 <script>
 
+    var chartData; // globar variable for hold chart data
+    google.load("visualization", "1", { packages: ["corechart"] });
+
+    // Here We will fill chartData
+
+    $(document).ready(function () {
+
+        $.ajax({
+
+            url: '@Url.Action("SaleVsRegularOrderReport", "Customer")',
+            data: "",
+            dataType: "json",
+            type: "POST",
+            contentType: "application/json; chartset=utf-8",
+            success: function (data) {
+
+                chartData = data;
+
+            },
+            error: function () {
+                alert("Error loading data! Please try again.");
+
+            }
+        }).done(function () {
+            // after complete loading data
+            google.setOnLoadCallback(drawChart);
+            drawChart();
+        });
+    });
+
+
+    function drawChart() {
+        var data = google.visualization.arrayToDataTable(chartData);
+
+        var options = {
+            title: "Sale vs Regular Product Order",
+            pointSize: 5
+        };
+
+        var pieChart = new google.visualization.PieChart(document.getElementById('chart_div'));
+        pieChart.draw(data, options);
+
+    }
+
+
+
+
     //declearing html elements
     const imgDiv = document.querySelector('.profile-pic-div');
     const img = document.querySelector('#photo');
@@ -259,7 +328,7 @@
 
             }
 
-            var formdata = new FormData($('form').get(0));
+            var formdata = new FormData($('#ajaxformsub').get(0));
             CallService(formdata);
 
             function CallService(file) {
@@ -270,8 +339,8 @@
                     cache: false,
                     processData: false,
                     contentType: false,
-                    success: function (color) {
-                        ;
+                    success: function (data) {
+                        $("#updateimg").val(data);
                     },
                     error: function () {
                         alert('Error occured');
@@ -280,6 +349,23 @@
             }
         });
     });
+
+    $("body").on("click", "#btnExport", function () {
+        html2canvas($('#tblorder')[0], {
+            onrendered: function (canvas) {
+                var data = canvas.toDataURL();
+                var docDefinition = {
+                    content: [{
+                        image: data,
+                        width: 500
+                    }]
+                };
+                pdfMake.createPdf(docDefinition).download("Order-details.pdf");
+            }
+        });
+    });
+
+
     function showreport(element) {
         $(".removefocus").addClass("text-secondary");
         $(element).removeClass("text-secondary");
@@ -287,7 +373,9 @@
         $(".infodiv").hide();
         $(".changepass").hide();
         $(".ordersdiv").hide();
+        $(".salevsregular").hide();
         $(".reviewdiv").hide();
+        $(".pendingordersdiv").hide();
     }
     function showinfo(element) {
         $(".removefocus").addClass("text-secondary");
@@ -296,8 +384,22 @@
         $(".ordersdiv").hide();
         $(".reviewdiv").hide();
         $(".changepass").hide();
+        $(".salevsregular").hide();
         $(".infodiv").show();
+        $(".pendingordersdiv").hide();
     }
+    function showpendingorders(element) {
+        $(".removefocus").addClass("text-secondary");
+        $(element).removeClass("text-secondary");
+        $(".reportdiv").hide();
+        $(".infodiv").hide();
+        $(".reviewdiv").hide();
+        $(".changepass").hide();
+        $(".salevsregular").hide();
+        $(".ordersdiv").hide();
+        $(".pendingordersdiv").show();
+    }
+
     function showorders(element) {
         $(".removefocus").addClass("text-secondary");
         $(element).removeClass("text-secondary");
@@ -305,8 +407,11 @@
         $(".infodiv").hide();
         $(".reviewdiv").hide();
         $(".changepass").hide();
+        $(".salevsregular").hide();
         $(".ordersdiv").show();
+        $(".pendingordersdiv").hide();
     }
+
     function showreviews(element) {
         $(".removefocus").addClass("text-secondary");
         $(element).removeClass("text-secondary");
@@ -314,9 +419,23 @@
         $(".infodiv").hide();
         $(".ordersdiv").hide();
         $(".changepass").hide();
+        $(".salevsregular").hide();
         $(".reviewdiv").show();
+        $(".pendingordersdiv").hide();
     }
     //ddddddddddddddddddddddddddd
+
+    function showsalevsregular(element) {
+        $(".removefocus").addClass("text-secondary");
+        $(element).removeClass("text-secondary");
+        $(".reportdiv").hide();
+        $(".infodiv").hide();
+        $(".ordersdiv").hide();
+        $(".reviewdiv").hide();
+        $(".changepass").hide();
+        $(".salevsregular").show();
+        $(".pendingordersdiv").hide();
+    }
 
      function showpasschanges(element) {
         $(".removefocus").addClass("text-secondary");
@@ -324,8 +443,10 @@
         $(".reportdiv").hide();
         $(".infodiv").hide();
         $(".ordersdiv").hide();
-        $(".reviewdiv").hide();
-        $(".changepass").show();
+         $(".reviewdiv").hide();
+         $(".salevsregular").hide();
+         $(".changepass").show();
+         $(".pendingordersdiv").hide();
     }
     $("#CurrentPassword").change(function () {
         if ($("#CurrentPassword").val() != $("#currpass").val()) {
@@ -334,7 +455,7 @@
         } else {
             $(".currenterr").empty();
         }
-    });   
+    });
     $("#NewPassword").change(function () {
         if ($("#NewPassword").val().length < 4) {
             $(".newerr").empty();
@@ -342,7 +463,7 @@
         }else {
             $(".newerr").empty();
         }
-    });   
+    });
     $("#ConfirmPassword").change(function () {
         if ($("#ConfirmPassword").val().length < 4) {
             $(".conerr").empty();
@@ -356,7 +477,7 @@
         } else {
             $(".conerr").empty();
         }
-    });   
+    });
 
 
     function validatepass() {
@@ -365,7 +486,7 @@
             $(".currenterr").append(`<small class="text-danger err">current password didn't match</small>`);
         }
         if ($("#ConfirmPassword").val().length < 1) {
-           
+
             $(".conerr").empty();
             $(".conerr").append(`<small class="text-danger err">confirm password required</small>`);
         }
@@ -401,6 +522,6 @@
             return false;
         }
     }
-    
-   
+
+
 </script>

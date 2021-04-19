@@ -7,6 +7,7 @@
     var errorcheckig = "";
     int j = 1;
     int i = 0;
+    double c1 = 0;
 }
 
 <hr />
@@ -57,7 +58,7 @@
                     <p class="text-secondary">@j</p>
                 </div>
                 <div class="col-1">
-                    <button class="btn btn btn-light" onclick="deleteCart(this)" data-cartindex-type="@i"><i class="far fa-trash-alt"></i></button>
+                    <button class="btn btn btn-light" type="button" onclick="deleteCart(this)" data-cartindex-type="@i"><i class="far fa-trash-alt"></i></button>
                 </div>
                 <div class="col-1">
                     @{string image = (item.product.ImageFile).Split('|')[0];}
@@ -83,14 +84,37 @@
                     </div>
                 </div>
                 <div class="col-1">
-                    <p>@item.product.UnitPrice</p>
+                    @if (item.product.Sale != null)
+                    {
+                    
+                        var p = (double)item.product.UnitPrice;
+                        var v = Convert.ToDouble(item.product.Sale.Amount) / 100;
+                        c1 = (p - (p * v));
+                        <p><s>@item.product.UnitPrice</s> &nbsp; @c1</p>
+                    }
+                    else
+                    {
+                       <p>@item.product.UnitPrice</p>
+                    }
+
                 </div>
                 <div class="col-1">
                     <p class="p-2 border border-secondary">@item.count</p>
                 </div>
                 @{
-                    var subtotal = (double)(item.count * item.product.UnitPrice);
-                    total += subtotal;
+                    double subtotal = 0;
+                    
+                    if (item.product.Sale != null)
+                    {
+                         subtotal = (double)(item.count * c1);
+                        total += subtotal;
+                    }
+                    else
+                    {
+                         subtotal = (double)(item.count * item.product.UnitPrice);
+                        total += subtotal;
+                    }
+
                 }
                 <div class="col-1">
                     <p>৳ @subtotal</p>

@@ -1,5 +1,10 @@
 ﻿@model IEnumerable<E_Commerce.Models.MainCategory>
 
+@{
+    ViewBag.Title = "ProductCount";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
 <div class="container text-center">
     <table class="table table-bordered  table-hover">
 
@@ -168,7 +173,7 @@
                 </table>
             </td>
             <td>
-                @{ 
+                @{
                     var salecount = Model.Where(x => x.Category_id == 3).FirstOrDefault().Products.Where(x => x.SaleID != null).Count() + Model.Where(x => x.Category_id == 2).FirstOrDefault().Products.Where(x => x.SaleID != null).Count() + Model.Where(x => x.Category_id == 1).FirstOrDefault().Products.Where(x => x.SaleID != null).Count();
                 }
                 @salecount

@@ -143,7 +143,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.ImageFile, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-7">
-                <input class="form-control-file" type="file" name="files" accept="image/*" multiple onchange="for (var i = 0; i < this.files.length; i++) alert(this.files[i].name);" />
+                <input class="form-control-file" type="file" name="files" accept="image/*" multiple required />
                 @Html.ValidationMessageFor(model => model.ImageFile, "", new { @class = "text-danger stopsubmit" })
                 @if (dict.Count > 0 && dict.ContainsKey("ImageFile"))
                 {
@@ -209,35 +209,60 @@
         }
     });
     $(".costvalidation").change(function () {
-        if ((Number)($(".costvalidation").val()) >= (Number)($(".pricefield").val())) {
+        if ((Number)($(".costvalidation").val()) >= (((Number)($(".pricefield").val()))*0.5)) {
             $(".priceerror").empty();
-            $(".priceerror").append(`<p class="stopsubmit" style="color:red">Cost amount should be smaller than unit price</p>`);
+            $(".priceerror").append(`<p class="stopsubmit" style="color:red">Cost amount should be smaller than half of unit price</p>`);
         } else {
             $(".priceerror").empty();
         }
     });
 
     $(".pricefield").change(function () {
-        if ((Number)($(".costvalidation").val()) >= (Number)($(".pricefield").val())) {
+        if ((Number)($(".costvalidation").val()) >= (((Number)($(".pricefield").val())) * 0.5)) {
             $(".priceerror").empty();
-            $(".priceerror").append(`<p class="stopsubmit" style="color:red">Cost amount should be smaller than unit price</p>`);
+            $(".priceerror").append(`<p class="stopsubmit" style="color:red">Cost amount should be smaller than half of unit price</p>`);
         } else {
             $(".priceerror").empty();
         }
     });
 
     function getvalue() {
-
-        if ($(".onhandvalidate").length>0 && $(".onhandvalidate").val().length < 1) {
-            $(".onhanderror").empty();
-            $(".onhanderror").append(`<p style="color:red" class="stopsubmit">OnHand field is required</p>`);
+       
+        if ((Number)($(".costvalidation").val()) >= (((Number)($(".pricefield").val())) * 0.5)) {
+           
+            $(".priceerror").empty();
+            $(".priceerror").append(`<p class="stopsubmit" style="color:red">Cost amount should be smaller than half of unit price</p>`);
+        } else {
+           
+            $(".priceerror").empty();
         }
+
+     
+
+        if ((Number)($(".costvalidation").val()) >= (((Number)($(".pricefield").val())) * 0.5)) {
+            
+            $(".priceerror").empty();
+            $(".priceerror").append(`<p class="stopsubmit" style="color:red">Cost amount should be smaller than half of unit price</p>`);
+        } else {
+          
+            $(".priceerror").empty();
+        }
+        alert("three");
+        if ($(".onhandvalidate").length > 0) {
+            if ($(".onhandvalidate").val().length < 1) {
+                
+                $(".onhanderror").empty();
+                $(".onhanderror").append(`<p style="color:red" class="stopsubmit">OnHand field is required</p>`);
+            }
+        }
+        
+     
         if ($(".stopsubmit").length > 0 && !$(".stopsubmit").is(':empty')) {
             
             return false;
         }
         else {
-            alert("sajkjhdj");
+            
         var selected = $('#category').val();
         var valdata = new FormData($('form').get(0));
         if (selected[0] === "s") {
@@ -249,8 +274,8 @@
         } else {
             selected = selected.substring(2);
             valdata.append("FinalSubCategoryID", selected);
-        }
-
+            }
+           
 
         $.ajax({
             url: '@Url.Action("AddProduct", "Admin")',
@@ -260,16 +285,18 @@
             processData: false,
             contentType: false,
             success: function (color) {
-                ;
+            
             },
             error: function () {
                 alert('Error occured');
             }
         }).done(function (data) {
-
+       
             window.location.replace(data.newUrl);
-        });
-    }
-
+                });
+            
+        }
+      
+        return false;
     }
 </script>

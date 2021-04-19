@@ -2,8 +2,8 @@
 
 @{
     ViewBag.Title = "LifestyleProductlist";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-    Session["actionname"] = "WomanProductlist";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    Session["actionname"] = "LifeStyleProductlist";
     int cid = 0;
     string cname = "";
     if (Model?.Any() == true && Model.ElementAt(0).FinalSubCategory != null)
@@ -64,7 +64,7 @@
 
                             <button onclick="EditProduct(this)" data-productID-type="@item.Product_id" class="p-3 btn border-right border-dark" data-toggle="modal" data-target="#exampleModal"><i class="c text-secondary far fa-edit"></i></button>
                             <button onclick="AddToSale(this)" data-productID-type="@item.Product_id" class="p-3 btn border-right border-dark" data-toggle="modal" data-target="#saleModal">sale</button>
-                            <button onclick="DeleteProduct(this)" data-productID-type="@item.Product_id" class="btn p-3 border-right border-dark"><i class=" w text-secondary far fa-trash-alt"></i></button>
+                            <button onclick="DeleteProduct(this)" data-productID-type="@item.Product_id" data-productName-type="@item.Product_name" class="btn p-3 border-right border-dark" data-toggle="modal" data-target="#deleteModal"><i class=" w text-secondary far fa-trash-alt"></i></button>
 
                         </div>
 
@@ -76,6 +76,9 @@
                     </div>
                     <div class="price font-weight-bold">
                         ৳ @item.UnitPrice
+                    </div>
+                    <div class="review font-weight-bold">
+                        <a href="/AdminProduct/ReviewListbyProduct/@item.Product_id"><u>Total Review : @item.Reviews.Count()</u></a> | <a href="/AdminProduct/OrderListbyProduct/@item.Product_id"><u>Total Order : @{Html.RenderAction("GetTotalOrder", "AdminProduct", new { id = item.Product_id }); }</u></a>
                     </div>
                 </div>
             </div>
@@ -98,6 +101,35 @@
         </div>
     </div>
 </form>
+
+
+<form id="Saleform" action="/Sale/AddProductToSale" method="post">
+    <div id="saleModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+
+                </div>
+                <div class="modal-body">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div id="deleteModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header deleteHeader">
+
+            </div>
+            <div class="modal-body deleteBody">
+
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
     function additemcard() {
@@ -127,9 +159,9 @@
                 $(".modal-header").append(`<h5 class="modal-title">${response.Product_name}</h5><button type="button"  class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`);
                 $(".modal-body").append(`<div class="container"><div class="row border-buttom border-dark"><div class="col-4"><img style="max-width:100%;" src="/Content/image/${response.ImageFile.split('|')[0]}" alt="product-image"></div>` +
                     `<div class="col-8"><p>${response.Product_name}</p><p>${response.Description}</p><p class="font-weight-bold">Price: ৳ ${response.UnitPrice}</p></div></div></hr>` +
-                    `<div class="row"><div class="col mt-2"> <div class="form-group" id="selectformsale"><label for="SalePercentage">Sale Percentage</label><input type="number" name="Amount" id="SalePercentage" class="form-control"/></div>` +
+                    `<div class="row"><div class="col mt-2"> <div class="form-group" id="selectformsale"><label for="SalePercentage">Sale Percentage</label><input type="number" min = 1 max = 50 required name="Amount" id = "SalePercentage" class="form-control"/><p class="errsale"></p></div><input type="hidden" name="Product_id" value="${response.Product_id}"/>` +
                     `</div></div ></div>`);
-                $(".modal-body").append(`<button type="submit" class="ml-3 mt-2 btn btn-primary mb-2" id="update">Update</button>`);
+                $(".modal-body").append(`<button type="submit" class="ml-3 mt-2 btn btn-primary mb-2" id="update">Add</button>`);
                 $(".modal-body").append(`<button type = "button" class="ml-2 btn btn-secondary" data-dismiss="modal">Close </button >`);
             }
         });
@@ -154,9 +186,13 @@
                     `<div class="row"><div class="col mt-2"> <div class="form-group" id="selectform"><label for="namefield">Product Name</label><input type="text"  name="Product_name" value="${response.Product_name}" id="namefield" class="form-control"/></div>` +
                     `<div class="form-group" id="selectform2"><label for="descriptionfield">Product Description</label><input type="text" value="${response.Description}"  name="Description" id="descriptionfield" class="form-control"/></div>` +
                     `<div class="form-group" id="selectform3"><label for="pricefield">Product Price</label><input type="text" value="${response.UnitPrice}"  name="UnitPrice" id="pricefield" class="form-control"/></div>` +
+                    `<div class="form-group" id="selectform5"></div>`+
                     `<div class="form-group" id="selectform4"><label for="Pimage">Product Image</label><input class="form-control-file" type="file" id="Pimage" name="files" accept="image/*" multiple/><small class="form-text text-muted">If no file selected, previous file will stays</small></div>` +
 
                     `</div></div ></div>`);
+                if (response.Onhand != null) {
+                    $("#selectform5").append(`<label for="onhand">OnHand</label><input class="form-control" id="onhand" type="text" value="${response.Onhand}" name="OnHand"/>`);
+                }
 
                 $(".modal-body").append(`<div class="ml-3" id="errorms"></div>`);
                 $(".modal-body").append(`<button type="submit" class="ml-3 mt-2 btn btn-primary mb-2" id="update">Update</button>`);
@@ -170,6 +206,19 @@
                     self.val(self.val().replace(/[^0-9\.]/g, ''));
                     if ((evt.which != 46 || self.val().indexOf('.') != -1) && (evt.which < 48 || evt.which > 57)) {
                         evt.preventDefault();
+                    }
+                });
+
+                $("#onhand").change(function () {
+                    var value = $("#onhand").val();
+                    if (value.length == 0) {
+                        $("#selectform5").append(`<p style="color:red" class="modalerror name">OnHand is Required</p>`);
+                    }
+                    else if (isNaN(value)) {
+                        $("#selectform5").append(`<p style="color:red" class="modalerror name">OnHand must be numeric</p>`);
+                    }
+                    else if (Number(value) < 1) {
+                        $("#selectform5").append(`<p style="color:red" class="modalerror name">OnHand must be greater than zero</p>`);
                     }
                 });
 
@@ -224,6 +273,10 @@
                         $("#selectform").append(`<p style="color:red" class="modalerror img">name is Required</p>`);
                         i = false;
                     }
+                    if ($("#onhand").val().length == 0) {
+                        $("#selectform5").append(`<p style="color:red" class="modalerror img">OnHand is Required</p>`);
+                        i = false;
+                    }
                     if (i == false) {
                         return false;
                     } else {
@@ -250,7 +303,7 @@
             $.ajax({
                 type: "POST",
                 datatype: "json",
-                url: '/Admin/SortByLifestyleProductList',
+                url: '/Admin/SortedProductList',
                 data: {
                     value: value
                 },
@@ -284,7 +337,10 @@
                             `<div class= "price font-weight-bold">` +
                             `৳ ${price}` +
                             `</div >` +
-                            `</div > ` +
+                            `<div class="review font-weight-bold">`+
+                            `<a href="/AdminProduct/ReviewListbyProduct/${value["Product_id"]}"><u>Total Review : ${value["totalreview"]}</u></a> | <a href="/AdminProduct/OrderListbyProduct/${value["Product_id"]}"><u>Total Order : ${value["totalorder"]}</u></a>`+
+                            `</div>`+
+                            `</div >`+
                             `</div>`);
                     });
                 }

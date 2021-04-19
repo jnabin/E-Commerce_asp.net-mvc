@@ -10,8 +10,10 @@ using System.Web.Mvc;
 
 namespace E_Commerce.Controllers
 {
-    public class AdminController : Controller
+    public class AdminController : AdminBaseController
     {
+        
+        private AdminRepository adminrepo = new AdminRepository();
         private ProductRepository productRepository = new ProductRepository();
         private ProductHistoryRepository producthistory = new ProductHistoryRepository();
         private ProductSizeHistoryRepository sizehistory = new ProductSizeHistoryRepository();
@@ -19,6 +21,10 @@ namespace E_Commerce.Controllers
         private FinalSubCategoryRepository FinalSub = new FinalSubCategoryRepository();
         private MainCategoryRepository mainCategoryRepository = new MainCategoryRepository();
         private ReviewRepository reviewrepo = new ReviewRepository();
+        private CustomerRepository customer = new CustomerRepository();
+        private ProfitRepository profitrepo = new ProfitRepository();
+        private ProductOrderRepository productorder = new ProductOrderRepository();
+       
         private ActionResult CheckValidity()
         {
             if (Session["admin"] == null)
@@ -37,6 +43,12 @@ namespace E_Commerce.Controllers
             {
                 return RedirectToAction("index", "Home");
             }
+            double totalrevenue = 0;
+            foreach (var item in profitrepo.GetAll())
+            {
+                totalrevenue += (double)item.ProfitAmount;
+            }
+            Session["netprofit"] = totalrevenue;
             return View(productRepository.ProductsWithoutSize());
         }
         [HttpGet]
@@ -142,6 +154,7 @@ namespace E_Commerce.Controllers
 
                 ProductHistory Phistory = new ProductHistory();
                 Phistory.AddedDate = product.AddedDate;
+                Phistory.OnHand = product.OnHand;
                 Phistory.Product_name = product.Product_name;
                 Phistory.UnitPrice = product.UnitPrice;
                 Phistory.Description = product.Description;
@@ -382,7 +395,11 @@ namespace E_Commerce.Controllers
             productView.Product_name = productRepository.Get(id).Product_name;
             productView.Description = productRepository.Get(id).Description;
             productView.CategoryID = productRepository.Get(id).CategoryID;
-
+            if(productRepository.Get(id).SizeCategory == "other")
+            {
+                productView.Onhand = (int)productRepository.Get(id).OnHand;
+            }
+            
             productView.UnitPrice = productRepository.Get(id).UnitPrice;
             productView.FinalSubCategoryID = productRepository.Get(id).FinalSubCategoryID;
             productView.SubCategoryID = productRepository.Get(id).SubCategoryID;
@@ -476,9 +493,17 @@ namespace E_Commerce.Controllers
                 {
                     product.UnitPrice = (Convert.ToDecimal(formCollection[key]));
                 }
+                else if (key == "OnHand")
+                {
+                    product.OnHand = (Convert.ToInt32(formCollection[key]));
+                }
             }
             ProductHistory Phistory = new ProductHistory();
             Phistory.Product_id = sizehistory.GetByProductNameCategory(productRepository.Get(product.Product_id).Product_name, productRepository.Get(product.Product_id).CategoryID).Product_id;
+            if(product.OnHand != null)
+            {
+                Phistory.OnHand = product.OnHand;
+            }
             Phistory.Product_name = product.Product_name;
             Phistory.UnitPrice = product.UnitPrice;
             Phistory.Description = product.Description;
@@ -514,7 +539,7 @@ namespace E_Commerce.Controllers
             {
                 if (categoryname == "f")
                 {
-                    var sortedproduct = productRepository.GetfromFinalCategory(id).OrderBy(x => x.Product_name);
+                    var sortedproduct = productRepository.GetfromFinalCategory(id).OrderBy(x => x.Product_name).Where(x => x.SaleID == null);
                     foreach (var item in sortedproduct)
                     {
                         sortmodel.Add(new SortViewModel()
@@ -522,13 +547,15 @@ namespace E_Commerce.Controllers
                             Product_name = item.Product_name,
                             Product_id = item.Product_id,
                             UnitPrice = item.UnitPrice,
-                            ImageFile = item.ImageFile
+                            ImageFile = item.ImageFile,
+                            totalreview = item.Reviews.Count(),
+                            totalorder = producthistory.GetByProductNameCategory(item.Product_name, item.CategoryID).OrderProducts.Count()
                         });
                     }
                 }
                 else if (categoryname == "m")
                 {
-                    var sortedproduct = productRepository.GetfromMainCategory(id).OrderBy(x => x.Product_name);
+                    var sortedproduct = productRepository.GetfromMainCategory(id).OrderBy(x => x.Product_name).Where(x => x.SaleID == null);
                     foreach (var item in sortedproduct)
                     {
                         sortmodel.Add(new SortViewModel()
@@ -536,13 +563,15 @@ namespace E_Commerce.Controllers
                             Product_name = item.Product_name,
                             Product_id = item.Product_id,
                             UnitPrice = item.UnitPrice,
-                            ImageFile = item.ImageFile
+                            ImageFile = item.ImageFile,
+                            totalreview = item.Reviews.Count(),
+                            totalorder = producthistory.GetByProductNameCategory(item.Product_name, item.CategoryID).OrderProducts.Count()
                         });
                     }
                 }
                 else
                 {
-                    var sortedproduct = productRepository.GetfromSubCategory(id).OrderBy(x => x.Product_name);
+                    var sortedproduct = productRepository.GetfromSubCategory(id).OrderBy(x => x.Product_name).Where(x => x.SaleID == null);
                     foreach (var item in sortedproduct)
                     {
                         sortmodel.Add(new SortViewModel()
@@ -550,7 +579,9 @@ namespace E_Commerce.Controllers
                             Product_name = item.Product_name,
                             Product_id = item.Product_id,
                             UnitPrice = item.UnitPrice,
-                            ImageFile = item.ImageFile
+                            ImageFile = item.ImageFile,
+                            totalreview = item.Reviews.Count(),
+                            totalorder = producthistory.GetByProductNameCategory(item.Product_name, item.CategoryID).OrderProducts.Count()
                         });
                     }
                 }
@@ -559,7 +590,7 @@ namespace E_Commerce.Controllers
             {
                 if (categoryname == "f")
                 {
-                    var sortedproduct = productRepository.GetfromFinalCategory(id).OrderByDescending(x => x.Product_name);
+                    var sortedproduct = productRepository.GetfromFinalCategory(id).OrderByDescending(x => x.Product_name).Where(x => x.SaleID == null);
                     foreach (var item in sortedproduct)
                     {
                         sortmodel.Add(new SortViewModel()
@@ -567,14 +598,16 @@ namespace E_Commerce.Controllers
                             Product_name = item.Product_name,
                             Product_id = item.Product_id,
                             UnitPrice = item.UnitPrice,
-                            ImageFile = item.ImageFile
+                            ImageFile = item.ImageFile,
+                            totalreview = item.Reviews.Count(),
+                            totalorder = producthistory.GetByProductNameCategory(item.Product_name, item.CategoryID).OrderProducts.Count()
                         });
                     }
 
                 }
                 else if (categoryname == "m")
                 {
-                    var sortedproduct = productRepository.GetfromMainCategory(id).OrderByDescending(x => x.Product_name);
+                    var sortedproduct = productRepository.GetfromMainCategory(id).OrderByDescending(x => x.Product_name).Where(x => x.SaleID == null);
                     foreach (var item in sortedproduct)
                     {
                         sortmodel.Add(new SortViewModel()
@@ -582,13 +615,15 @@ namespace E_Commerce.Controllers
                             Product_name = item.Product_name,
                             Product_id = item.Product_id,
                             UnitPrice = item.UnitPrice,
-                            ImageFile = item.ImageFile
+                            ImageFile = item.ImageFile,
+                            totalreview = item.Reviews.Count(),
+                            totalorder = producthistory.GetByProductNameCategory(item.Product_name, item.CategoryID).OrderProducts.Count()
                         });
                     }
                 }
                 else
                 {
-                    var sortedproduct = productRepository.GetfromSubCategory(id).OrderByDescending(x => x.Product_name);
+                    var sortedproduct = productRepository.GetfromSubCategory(id).OrderByDescending(x => x.Product_name).Where(x => x.SaleID == null);
                     foreach (var item in sortedproduct)
                     {
                         sortmodel.Add(new SortViewModel()
@@ -596,7 +631,9 @@ namespace E_Commerce.Controllers
                             Product_name = item.Product_name,
                             Product_id = item.Product_id,
                             UnitPrice = item.UnitPrice,
-                            ImageFile = item.ImageFile
+                            ImageFile = item.ImageFile,
+                            totalreview = item.Reviews.Count(),
+                            totalorder = producthistory.GetByProductNameCategory(item.Product_name, item.CategoryID).OrderProducts.Count()
                         });
                     }
                 }
@@ -605,7 +642,7 @@ namespace E_Commerce.Controllers
             {
                 if (categoryname == "f")
                 {
-                    var sortedproduct = productRepository.GetfromFinalCategory(id).OrderBy(x => x.UnitPrice);
+                    var sortedproduct = productRepository.GetfromFinalCategory(id).OrderBy(x => x.UnitPrice).Where(x => x.SaleID == null);
                     foreach (var item in sortedproduct)
                     {
                         sortmodel.Add(new SortViewModel()
@@ -613,14 +650,16 @@ namespace E_Commerce.Controllers
                             Product_name = item.Product_name,
                             Product_id = item.Product_id,
                             UnitPrice = item.UnitPrice,
-                            ImageFile = item.ImageFile
+                            ImageFile = item.ImageFile,
+                            totalreview = item.Reviews.Count(),
+                            totalorder = producthistory.GetByProductNameCategory(item.Product_name, item.CategoryID).OrderProducts.Count()
                         });
                     }
 
                 }
                 else if (categoryname == "m")
                 {
-                    var sortedproduct = productRepository.GetfromMainCategory(id).OrderBy(x => x.UnitPrice);
+                    var sortedproduct = productRepository.GetfromMainCategory(id).OrderBy(x => x.UnitPrice).Where(x => x.SaleID == null);
                     foreach (var item in sortedproduct)
                     {
                         sortmodel.Add(new SortViewModel()
@@ -628,13 +667,15 @@ namespace E_Commerce.Controllers
                             Product_name = item.Product_name,
                             Product_id = item.Product_id,
                             UnitPrice = item.UnitPrice,
-                            ImageFile = item.ImageFile
+                            ImageFile = item.ImageFile,
+                            totalreview = item.Reviews.Count(),
+                            totalorder = producthistory.GetByProductNameCategory(item.Product_name, item.CategoryID).OrderProducts.Count()
                         });
                     }
                 }
                 else
                 {
-                    var sortedproduct = productRepository.GetfromSubCategory(id).OrderBy(x => x.UnitPrice);
+                    var sortedproduct = productRepository.GetfromSubCategory(id).OrderBy(x => x.UnitPrice).Where(x => x.SaleID == null);
                     foreach (var item in sortedproduct)
                     {
                         sortmodel.Add(new SortViewModel()
@@ -642,7 +683,9 @@ namespace E_Commerce.Controllers
                             Product_name = item.Product_name,
                             Product_id = item.Product_id,
                             UnitPrice = item.UnitPrice,
-                            ImageFile = item.ImageFile
+                            ImageFile = item.ImageFile,
+                            totalreview = item.Reviews.Count(),
+                            totalorder = producthistory.GetByProductNameCategory(item.Product_name, item.CategoryID).OrderProducts.Count()
                         });
                     }
                 }
@@ -651,7 +694,7 @@ namespace E_Commerce.Controllers
             {
                 if (categoryname == "f")
                 {
-                    var sortedproduct = productRepository.GetfromFinalCategory(id).OrderByDescending(x => x.UnitPrice);
+                    var sortedproduct = productRepository.GetfromFinalCategory(id).OrderByDescending(x => x.UnitPrice).Where(x => x.SaleID == null);
                     foreach (var item in sortedproduct)
                     {
                         sortmodel.Add(new SortViewModel()
@@ -659,14 +702,16 @@ namespace E_Commerce.Controllers
                             Product_name = item.Product_name,
                             Product_id = item.Product_id,
                             UnitPrice = item.UnitPrice,
-                            ImageFile = item.ImageFile
+                            ImageFile = item.ImageFile,
+                            totalreview = item.Reviews.Count(),
+                            totalorder = producthistory.GetByProductNameCategory(item.Product_name, item.CategoryID).OrderProducts.Count()
                         });
                     }
 
                 }
                 else if (categoryname == "m")
                 {
-                    var sortedproduct = productRepository.GetfromMainCategory(id).OrderByDescending(x => x.UnitPrice);
+                    var sortedproduct = productRepository.GetfromMainCategory(id).OrderByDescending(x => x.UnitPrice).Where(x => x.SaleID == null);
                     foreach (var item in sortedproduct)
                     {
                         sortmodel.Add(new SortViewModel()
@@ -674,13 +719,15 @@ namespace E_Commerce.Controllers
                             Product_name = item.Product_name,
                             Product_id = item.Product_id,
                             UnitPrice = item.UnitPrice,
-                            ImageFile = item.ImageFile
+                            ImageFile = item.ImageFile,
+                            totalreview = item.Reviews.Count(),
+                            totalorder = producthistory.GetByProductNameCategory(item.Product_name, item.CategoryID).OrderProducts.Count()
                         });
                     }
                 }
                 else
                 {
-                    var sortedproduct = productRepository.GetfromSubCategory(id).OrderByDescending(x => x.UnitPrice);
+                    var sortedproduct = productRepository.GetfromSubCategory(id).OrderByDescending(x => x.UnitPrice).Where(x => x.SaleID == null);
                     foreach (var item in sortedproduct)
                     {
                         sortmodel.Add(new SortViewModel()
@@ -688,7 +735,9 @@ namespace E_Commerce.Controllers
                             Product_name = item.Product_name,
                             Product_id = item.Product_id,
                             UnitPrice = item.UnitPrice,
-                            ImageFile = item.ImageFile
+                            ImageFile = item.ImageFile,
+                            totalreview = item.Reviews.Count(),
+                            totalorder = producthistory.GetByProductNameCategory(item.Product_name, item.CategoryID).OrderProducts.Count()
                         });
                     }
                 }
@@ -697,7 +746,7 @@ namespace E_Commerce.Controllers
             {
                 if (categoryname == "f")
                 {
-                    var sortedproduct = productRepository.GetfromFinalCategory(id);
+                    var sortedproduct = productRepository.GetfromFinalCategory(id).Where(x => x.SaleID == null);
                     foreach (var item in sortedproduct)
                     {
                         sortmodel.Add(new SortViewModel()
@@ -705,14 +754,16 @@ namespace E_Commerce.Controllers
                             Product_name = item.Product_name,
                             Product_id = item.Product_id,
                             UnitPrice = item.UnitPrice,
-                            ImageFile = item.ImageFile
+                            ImageFile = item.ImageFile,
+                            totalreview = item.Reviews.Count(),
+                            totalorder = producthistory.GetByProductNameCategory(item.Product_name, item.CategoryID).OrderProducts.Count()
                         });
                     }
 
                 }
                 else if (categoryname == "m")
                 {
-                    var sortedproduct = productRepository.GetfromMainCategory(id);
+                    var sortedproduct = productRepository.GetfromMainCategory(id).Where(x => x.SaleID == null);
                     foreach (var item in sortedproduct)
                     {
                         sortmodel.Add(new SortViewModel()
@@ -720,13 +771,15 @@ namespace E_Commerce.Controllers
                             Product_name = item.Product_name,
                             Product_id = item.Product_id,
                             UnitPrice = item.UnitPrice,
-                            ImageFile = item.ImageFile
+                            ImageFile = item.ImageFile,
+                            totalreview = item.Reviews.Count(),
+                            totalorder = producthistory.GetByProductNameCategory(item.Product_name, item.CategoryID).OrderProducts.Count()
                         });
                     }
                 }
                 else
                 {
-                    var sortedproduct = productRepository.GetfromSubCategory(id);
+                    var sortedproduct = productRepository.GetfromSubCategory(id).Where(x => x.SaleID == null);
                     foreach (var item in sortedproduct)
                     {
                         sortmodel.Add(new SortViewModel()
@@ -734,7 +787,9 @@ namespace E_Commerce.Controllers
                             Product_name = item.Product_name,
                             Product_id = item.Product_id,
                             UnitPrice = item.UnitPrice,
-                            ImageFile = item.ImageFile
+                            ImageFile = item.ImageFile,
+                            totalreview = item.Reviews.Count(),
+                            totalorder = producthistory.GetByProductNameCategory(item.Product_name, item.CategoryID).OrderProducts.Count()
                         });
                     }
                 }
@@ -748,14 +803,29 @@ namespace E_Commerce.Controllers
             return View(reviewrepo.GetAll());
         }
 
+        public ActionResult CustomerDetails(int id)
+        {
+            return View(customer.Get(id));
+        }
+
+        
+
+        public ActionResult DeleteReview(int id)
+        {
+            
+            reviewrepo.Delete(id);
+            return RedirectToAction("ReviewList");
+        }
+
         public ActionResult GetManCategoryReportData()
         {
-         int Jackets = productRepository.GetAll().Where(x => x.FinalSubCategory.FinalSubCate_name == "Jackets").Count();
+            int Casual_Shirts = productRepository.GetAll().Where(x => x.FinalSubCategory.FinalSubCate_name == "Casual Shirts").Count();
+            int Jackets = productRepository.GetAll().Count(x => x.FinalSubCategory.FinalSubCate_name == "Jackets");
          int Suits_Blazers = productRepository.GetAll().Where(x => x.FinalSubCategory.FinalSubCate_name == "Suits & Blazers").Count();
          int Hoodies = productRepository.GetAll().Where(x => x.FinalSubCategory.FinalSubCate_name == "Hoodies").Count();
             int SweatShirts = productRepository.GetAll().Where(x => x.FinalSubCategory.FinalSubCate_name == "SweatShirts").Count();
             int Sweater = productRepository.GetAll().Where(x => x.FinalSubCategory.FinalSubCate_name == "Sweater").Count();
-            int Casual_Shirts = productRepository.GetAll().Where(x => x.FinalSubCategory.FinalSubCate_name == "Casual Shirts").Count();
+           
             int Polo = productRepository.GetAll().Where(x => x.FinalSubCategory.FinalSubCate_name == "Polo").Count();
             int T_Shirts = productRepository.GetAll().Where(x => x.FinalSubCategory.FinalSubCate_name == "T Shirts").Count();
             int Dress_Shirts = productRepository.GetAll().Where(x => x.FinalSubCategory.FinalSubCate_name == "Dress Shirts").Count();
@@ -864,14 +934,189 @@ namespace E_Commerce.Controllers
         {
             return View();
         }
-        [ChildActionOnly]
+        
         public ActionResult ProductCount()
         {
-            return PartialView(mainCategoryRepository.GetAll());
+            return View(mainCategoryRepository.GetAll());
         }
+        [ChildActionOnly]
+        public ActionResult Profit()
+        {
+            
+            return PartialView(profitrepo.GetAll());
+        }
+        [HttpPost]
+        public ActionResult ProfitReport()
+        {
+            var model = profitrepo.GetAll();
+            var data1 = model.Where(x => x.OrderProduct.ProductHistory.MainCategory.Category_name == "Men");
+            var data2 = model.Where(x => x.OrderProduct.ProductHistory.MainCategory.Category_name == "Women");
+            var data3 = model.Where(x => x.OrderProduct.ProductHistory.MainCategory.Category_name == "Life Style");
+            var chartData = new object[11];
+            chartData[0] = new object[]{
+                   "Date",
+                "Men Category",
+                "Women Category",
+                "LifeStyle Category"
+            };
+            DateTime EndDate = DateTime.Today;
+            DateTime StartDate = DateTime.Today.AddDays(-10);
+            int DayInterval = 1;
+
+            List<DateTime> dateList = new List<DateTime>();
+            while (StartDate.AddDays(DayInterval) <= EndDate)
+            {
+                StartDate = StartDate.AddDays(DayInterval);
+                dateList.Add(StartDate);
+            }
+            
+            int j = 0;
+            foreach(var item in dateList)
+            {
+                double menamount = 0;
+                double womenamount = 0;
+                double lifestyleamount = 0;
+               
+                foreach(var item2 in data1.Where(x => x.OrderProduct.Order.date == item))
+                {
+                    menamount += (double)item2.ProfitAmount;
+                 
+                }
+                foreach(var item2 in data2.Where(x => x.OrderProduct.Order.date == item))
+                {
+                    womenamount += (double)item2.ProfitAmount;
+                 
+                }
+                foreach(var item2 in data3.Where(x => x.OrderProduct.Order.date == item))
+                {
+                    lifestyleamount += (double)item2.ProfitAmount;
+                   
+                }
+
+                j++;
+                chartData[j] = new object[] { item.ToString().Split(' ')[0], menamount, womenamount, lifestyleamount };
+            }
+
+
+
+            return Json(chartData);
+        }
+
+        public ActionResult AdminProfile()
+        {
+            return View(adminrepo.Get((int)Session["adminLoginID"]));
+        }
+
+
+        [HttpPost]
+        public ActionResult updateImage(Admin admin, HttpPostedFileBase file)
+        {
+
+            if (file != null && file.ContentLength > 0)
+            {
+                try
+                {
+                    string path = System.IO.Path.Combine(Server.MapPath("~/content/image"), System.IO.Path.GetFileName(file.FileName));
+                    file.SaveAs(path);
+                    admin.ImageFile = System.IO.Path.GetFileName(file.FileName);
+                }
+                catch (Exception exp)
+                {
+                    ViewBag.Message = "ERROR:" + exp.Message.ToString();
+                    return View();
+                }
+            }
+            admin.Usertype = "customer";
+            adminrepo.Update(admin);
+
+            return Json(admin.ImageFile);
+
+        }
+
+        [HttpPost]
+        public ActionResult updateInfo(Admin admin)
+        {
+            if (Session["existUser"].ToString() != admin.Username && adminrepo.GetByName(admin.Username))
+            {
+                TempData["error"] = "Username already taken";
+                return RedirectToAction("AdminProfile");
+            }
+            admin.Usertype = "admin";
+            adminrepo.Update(admin);
+            return RedirectToAction("AdminProfile");
+        }
+          
+        [HttpPost]
+        public ActionResult codVSpaypal()
+        {
+            var chartData = new object[3];
+            chartData[0] = new object[]{
+                    "Payment Type",
+                    "Count"
+                };
+
+            int paypal = productorder.GetAll().Where(x => x.Order.PayMentMethod == "PayPal").Count();
+            int cashOnDelivery = productorder.GetAll().Where(x => x.Order.PayMentMethod == "Cash On Delivery").Count();
+            chartData[1] = new object[] { "Cash On Delivery Payment", cashOnDelivery };
+            chartData[2] = new object[] { "PayPal Payment", paypal };
+
+            return Json(chartData);
+        }
+
+        [HttpPost]
+        public ActionResult UpdatePassword(ChangePasswordViewModel admin)
+        {
+            Admin realadmin = adminrepo.Get(admin.CustomerID);
+            if (realadmin.Password == admin.password)
+            {
+                realadmin.Password = admin.newpassword;
+                adminrepo.Update(realadmin);
+            }
+            return Json("success");
+        }
+
+        public ActionResult AddManager()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult AddManager(Manager manager, HttpPostedFileBase file)
+        {
+            ManagerRepository managerrepo = new ManagerRepository();
+            if (managerrepo.GetByName(manager.Username))
+            {
+                TempData["error"] = "Username already taken";
+                return View();
+            }
+            if (file != null && file.ContentLength > 0)
+            {
+                try
+                {
+                    string path = System.IO.Path.Combine(Server.MapPath("~/content/image"), System.IO.Path.GetFileName(file.FileName));
+                    file.SaveAs(path);
+                    manager.ImageFIle = System.IO.Path.GetFileName(file.FileName);
+                }
+                catch (Exception exp)
+                {
+                    ViewBag.Message = "ERROR:" + exp.Message.ToString();
+                    return View();
+                }
+            }
+            manager.Usertype = "manager";
+            managerrepo.Insert(manager);
+            TempData["success"] = "Registration done!";
+            return RedirectToAction("Index", "Login");
+
+        }
+
+        public ActionResult OrderHistory()
+        {
+            return View(productorder.GetAll());
+        }
+
+
     }
-
-
     
 }
 
